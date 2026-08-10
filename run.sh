@@ -1,1 +1,1 @@
-
+java -cp Main
