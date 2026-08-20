@@ -7,6 +7,7 @@ import java.util.*;
 public class ShipPlacer{
     
     private ArrayList<Point> IntervalsX, IntervalsY;
+    private PlacementInputProvider inputProvider;
 
     public ShipPlacer(){
         IntervalsX = new ArrayList<>();
@@ -17,6 +18,22 @@ public class ShipPlacer{
     }
 
     public void PlayerShipPlacer(Board board){
+        Placement placement;
+        Point point;
+        Boolean valid;
+        for(ShipType ship: ShipType.getValue()){
+            do{
+                placement = inputProvider.getPlacement(ship);
+                point = placement.getPoint();
+                board.AddShip(ship, placement.getPoint(), placement.getRotation());
+                if(board[point.x][point.y].getCell() == 0){
+                    System.out.println("Ship placed wrong!");
+                    valid = false;
+                }else{
+                    valid = true;
+                }
+            }while(!valid);
+        }
     }
 
     public void ComputerShipPlacer(Board board){
@@ -125,23 +142,8 @@ public class ShipPlacer{
 
         XInterval = new Point(TopPoint.x, BottomPoint.x);
         YInterval = new Point(point.y + 1, BottomPoint.y);
-    }
-}
 
-class Placement{
-    private Point point;
-    private int rotation;
-
-    public Placement(Point point, int rotation){
-        this.point = point;
-        this.rotation = rotation;
-    }
-
-    public Point getPoint(){
-        return point;
-    }
-
-    public int getRotation(){
-        return rotation;
+        IntervalsX.add(XInterval);
+        IntervalsY.add(YInterval);
     }
 }
