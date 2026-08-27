@@ -36,7 +36,7 @@ public class GamePlayer{
     public void HitRatio(){
         try{
             HitRatio = CorrectHits / (CorrectHits + WrongHits);
-            HitRatio *= 100;
+        HitRatio *= 100;
         }catch(ArithmeticException e){
             e.printStackTrace();
         }

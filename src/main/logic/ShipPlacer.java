@@ -31,7 +31,7 @@ public class ShipPlacer{
                     valid = false;
                 }else{
                     valid = true;
-                }
+                } 
             }while(!valid);
         }
     }
