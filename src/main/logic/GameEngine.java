@@ -40,7 +40,19 @@ public class GameEngine{
         shipPlacer.ComputerShipPlacer(Computer.PlayerBoard);
         shipPlacer.PlayerShipPlacer(Player.PlayerBoard);
 
+        boolean run = true;
+        while(run){
+            
+            
 
+            if(Player.PlayerBoard.ShipState() == true && Computer.PlayerBoard.ShipState() == false){
+                System.out.println(Player.getPlayerName() + "WON ");
+                run = false;
+            }else if(Player.PlayerBoard.ShipState() == false && Computer.PlayerBoard.ShipState() == true){
+                System.out.println(Computer.getPlayerName() + "WON");
+                run = false;
+            }
+        }
     }
 
 }
