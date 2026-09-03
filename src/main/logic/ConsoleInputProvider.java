@@ -32,4 +32,17 @@ public class ConsoleInputProvider implements PlacementInputProvider{
         scanner.close();
         return new Placement(new Point(x, y), rotation);
     }
+
+    public Point getMove(){
+        scanner = new Scanner(System.in);
+        
+        System.out.println("Hit the target: ");
+        System.out.print("X axis: ");
+        int x = scanner.nextInt();
+        System.out.print("Y axis: ");
+        int y = scanner.nextInt();
+        
+        scanner.close();
+        return new Point(x, y);
+    }
 }
