@@ -26,7 +26,7 @@ public class Board{
             if(X < 0 || X > 9 || Y < 0 || Y > 9)
                 throw new Exception("Error: Ship out of bounds!");
 
-            if((rotation == 0 && Y + ShipLength >= 9) || (rotation == 1 && X + ShipLength >= 9))
+            if((rotation == 0 && Y + ShipLength > 9) || (rotation == 1 && X + ShipLength > 9))
                 throw new Exception("Error: Ship out of bounds!");
 
             if(rotation == 0){

@@ -17,7 +17,7 @@ public abstract class Player{
         this.WrongHits = 0;
     }
 
-    public abstract Point makeMove(Board opponentBoard);
+    public abstract void makeMove(Board opponentBoard);
 
     public void RecordHit(boolean isHit){
         if(isHit == true)
