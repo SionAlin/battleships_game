@@ -31,14 +31,18 @@ public class AIPlayer extends Player{
             PlayerBoard[point.x][point.y].setPlayerHit(1);
 
             if(opponentBoard[point.x][point.y].getCell() == 1){
-                if(point.y > 0)
-                    NextPossibleHits.add(new Point(point.x, point.y-1));
-                if(point.y < 9)
-                    NextPossibleHits.add(new Point(point.x, point.y+1));
-                if(point.x > 0)
-                    NextPossibleHits.add(new Point(point.x-1, point.y));
-                if(point.x < 9)
-                    NextPossibleHits.add(new Point(point.x+1, point.y));
+                if(point.x == 0 || point.y == 0 || point.x == 9 || point.y == 9){
+                    continue;
+                }else{
+                    if(point.y > 0)
+                        NextPossibleHits.add(new Point(point.x, point.y-1));
+                    if(point.y < 9)
+                        NextPossibleHits.add(new Point(point.x, point.y+1));
+                    if(point.x > 0)
+                        NextPossibleHits.add(new Point(point.x-1, point.y));
+                    if(point.x < 9)
+                        NextPossibleHits.add(new Point(point.x+1, point.y));
+                }
             }
         }else{
             index = random.nextInt(NextPossibleHits.size());
@@ -48,7 +52,23 @@ public class AIPlayer extends Player{
             PlayerBoard[point.x][point.y].setPlayerHit(1);
 
             if(opponentBoard[point.x][point.y].getCell() == 1){
+                RecordHit(true);
+                
+                if(point.x == 0 || point.y == 0 || point.x == 9 || point.y == 9){
+                    continue;
+                }else{
+                    if(PlayerBoard[point.x-1][point.y].getPlayerHit() == 1 && opponentBoard[point.x-1][point.y].getCell() == 1 && PlayerBoard[point.x+1][point.y].getPlayerHit() == 0)
+                        NextPossibleHits.add(new Point(point.x+1, point.y));
+                    if(PlayerBoard[point.x+1][point.y].getPlayerHit() == 1 && opponentBoard[point.x+1][point.y].getCell() == 1 && PlayerBoard[point.x-1][point.y].getPlayerHit() == 0)
+                        NextPossibleHits.add(new Point(point.x-1, point.y));
+                    if(PlayerBoard[point.x][point.y-1].getPlayerHit() == 1 && opponentBoard[point.x][point.y-1].getCell() == 1 && PlayerBoard[point.x][point.y+1].getPlayerHit() == 0)
+                        NextPossibleHits.add(new Point(point.x, point.y+1));
+                    if(PlayerBoard[point.x][point.y+1].getPlayerHit() == 1 && opponentBoard[point.x][point.y+1].getCell() == 1 && PlayerBoard[point.x][point.y-1].getPlayerHit() == 0)
+                        NextPossibleHits.add(new Point(point.x, point.y-1));
+                }
 
+            }else{
+                RecordHit(false);
             }
         }
     }
