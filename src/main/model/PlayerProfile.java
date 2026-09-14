@@ -15,7 +15,7 @@ public class PlayerProfile{
     }
 
     public PlayerProfile(String PlayerProfile){
-        this.PlayerProfile(PlayerProfile, 0, 0, 0.0);
+        this(PlayerProfile, 0, 0, 0.0);
     }
     
     public String getPlayerName(){

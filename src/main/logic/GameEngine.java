@@ -4,11 +4,7 @@ import main.model.*;
 
 public class GameEngine{
    
-    public static void main(String[] args){
-
-    }
-
-    public GameEngine(){
+    /*public GameEngine(){
         
     }
 
@@ -53,6 +49,6 @@ public class GameEngine{
                 run = false;
             }
         }
-    }
+    }*/
 
 }
