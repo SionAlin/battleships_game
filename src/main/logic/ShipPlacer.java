@@ -1,6 +1,6 @@
 package main.logic;
 
-import model.*;
+import main.model.*;
 import java.awt.Point;
 import java.util.*;
 
@@ -47,8 +47,8 @@ public class ShipPlacer{
             placement = Place(IntervalsX.get(index), IntervalsY.get(index), ship.getLength());
             board.AddShip(ship, placement.getPoint(), placement.getRotation());
         
-            TopPoint = new Point(IntervalsX.get(index).x, IntervalsY.get(index).x;
-            BottomPoint = new Point(IntervalsX.get(index).y, IntervalsY.get(index).y;
+            TopPoint = new Point(IntervalsX.get(index).x, IntervalsY.get(index).x);
+            BottomPoint = new Point(IntervalsX.get(index).y, IntervalsY.get(index).y);
 
             IntervalsGenerator(placement.getPoint(), placement.getRotation(), TopPoint, BottomPoint, ship.getLength());
 

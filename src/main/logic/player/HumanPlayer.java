@@ -1,6 +1,6 @@
-package logic.player;
+package main.logic.player;
 
-import model.*;
+import main.model.*;
 import logic.*;
 import java.awt.Point;
 

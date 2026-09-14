@@ -1,6 +1,6 @@
 package main.logic;
 
-import model.*;
+import main.model.*;
 import java.util.Scanner;
 import java.awt.Point;
 

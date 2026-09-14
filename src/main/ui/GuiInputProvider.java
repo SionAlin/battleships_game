@@ -1,6 +1,6 @@
 package main.ui;
 
-import logic.*;
+import main.logic.*;
 import java.awt.Point;
 
 public class GuiInputProvider implements PlacementInputProvider{

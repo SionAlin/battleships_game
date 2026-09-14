@@ -1,6 +1,6 @@
 package main.logic;
 
-import model.*;
+import main.model.*;
 
 public class GameEngine{
    
