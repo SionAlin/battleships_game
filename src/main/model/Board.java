@@ -87,7 +87,7 @@ public class Board{
 
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 10; j++){
-                str += "(" + board[i][j].getCell() + ", " + board[i][j].getEnemyHit() + ", " + board[i][j].getPlayerHit() + ") ";
+                str += "(C" + board[i][j].getCell() + ", Eh" + board[i][j].getEnemyHit() + ", Ph" + board[i][j].getPlayerHit() + ") ";
             }
             str += "\n";
         }

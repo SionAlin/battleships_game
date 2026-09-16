@@ -1,3 +1,5 @@
 #Java build
 bin/
 *.class
+lib/
+*.jar

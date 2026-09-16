@@ -2,12 +2,12 @@ package test;
 
 import main.model.*;
 import main.logic.*;
+import java.awt.Point;
 
 public class BoardTests{
 
     public static void main(String[] args){
-        Board board = new Board();
-        board.toString();
+         
     }
 
     public void ShipPlacer_Test(){}
