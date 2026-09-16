@@ -5,9 +5,6 @@ import main.model.*;
 
 public class ConsoleInputTests{
     
-    public static void main(String[] args){
-    
-    }
-
+    @Test
     public void ConsoleInputProvider_Test(){}
 }

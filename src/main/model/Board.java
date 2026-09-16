@@ -15,52 +15,47 @@ public class Board{
         }
     }
     
-    public void AddShip(ShipType ShipToAdd, Point PlaceToAdd, int rotation){
+    public void AddShip(ShipType ShipToAdd, Point PlaceToAdd, int rotation) throws Exception{
         
         int ShipLength = ShipToAdd.getLength();
         int X = (int)PlaceToAdd.getX();
         int Y = (int)PlaceToAdd.getY();
         boolean ValidPosition = true;
-        try{
             
-            if(X < 0 || X > 9 || Y < 0 || Y > 9)
-                throw new Exception("Error: Ship out of bounds!");
+        if(X < 0 || X > 9 || Y < 0 || Y > 9)
+            throw new Exception("Error: Ship out of bounds!");
 
-            if((rotation == 0 && Y + ShipLength > 9) || (rotation == 1 && X + ShipLength > 9))
-                throw new Exception("Error: Ship out of bounds!");
+        if((rotation == 0 && Y + ShipLength > 9) || (rotation == 1 && X + ShipLength > 9))
+            throw new Exception("Error: Ship out of bounds!");
 
-            if(rotation == 0){
+        if(rotation == 0){
+            for(int i = Y; i < Y + ShipLength; i++){
+                if(board[X][i].getCell() == 1){
+                    ValidPosition = false;
+                    throw new Exception("Error: Ships overlap!");
+                }
+            }
+
+            if(ValidPosition == true){
                 for(int i = Y; i < Y + ShipLength; i++){
-                    if(board[X][i].getCell() == 1){
-                        ValidPosition = false;
-                        throw new Exception("Error: Ships overlap!");
-                    }
+                    board[X][i].setCell(1);
                 }
+            }
+        }
 
-                if(ValidPosition == true){
-                    for(int i = Y; i < Y + ShipLength; i++){
-                        board[X][i].setCell(1);
-                    }
+        if(rotation == 1){
+            for(int i = X; i < X + ShipLength; i++){
+                if(board[i][Y].getCell() == 1){
+                    ValidPosition = false;
+                    throw new Exception("Error: Ships overlap!");
                 }
             }
 
-            if(rotation == 1){
+            if(ValidPosition == true){
                 for(int i = X; i < X + ShipLength; i++){
-                    if(board[i][Y].getCell() == 1){
-                        ValidPosition = false;
-                        throw new Exception("Error: Ships overlap!");
-                    }
-                }
-
-                if(ValidPosition == true){
-                    for(int i = X; i < X + ShipLength; i++){
-                        board[i][Y].setCell(1);
-                    }
+                    board[i][Y].setCell(1);
                 }
             }
-
-        }catch(Exception e){
-            e.printStackTrace();
         }
     }
     

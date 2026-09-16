@@ -5,10 +5,9 @@ import main.logic.*;
 
 public class PlayerTests{
     
-    public static void main(String[] args){
-
-    }
-
+    @Test
     public void AIPlayer_Test(){}
+    
+    @Test
     public void HumanPlayer_Test(){}
 }
