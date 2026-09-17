@@ -1,7 +1,9 @@
 package test;
-
-import main.logic.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 import main.model.*;
+import main.logic.*;
+import java.awt.Point;
 
 public class ConsoleInputTests{
     
