@@ -9,7 +9,7 @@ import java.awt.Point;
 public class BoardTests{
 
     @Test
-    public void ShipPlacer_Test(){
+    public void ShipPlacer_Test() throws Exception{
 
         Board testPlayerBoard = new Board();
         ShipPlacer testPlayerShipPlacer = new ShipPlacer();
@@ -24,7 +24,7 @@ public class BoardTests{
     }
 
     @Test
-    public void Board_Test(){
+    public void Board_Test() throws Exception{
 
         Board testBoard = new Board();
         ShipType testShipFirst = ShipType.CARRIER;

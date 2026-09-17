@@ -17,7 +17,7 @@ public class ShipPlacer{
         IntervalsY.add(new Point(0,9));
     }
 
-    public void PlayerShipPlacer(Board board){
+    public void PlayerShipPlacer(Board board) throws Exception{
         Placement placement;
         Point point;
         Boolean valid;
@@ -36,7 +36,7 @@ public class ShipPlacer{
         }
     }
 
-    public void ComputerShipPlacer(Board board){
+    public void ComputerShipPlacer(Board board) throws Exception{
         
         Placement placement;
         int index;
