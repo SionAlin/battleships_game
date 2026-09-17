@@ -9,7 +9,19 @@ import java.awt.Point;
 public class BoardTests{
 
     @Test
-    public void ShipPlacer_Test(){}
+    public void ShipPlacer_Test(){
+
+        Board testPlayerBoard = new Board();
+        ShipPlacer testPlayerShipPlacer = new ShipPlacer();
+        Board testComputerBoard = new Board();
+        ShipPlacer testComputerShipPlacer = new ShipPlacer();
+
+        testPlayerShipPlacer.PlayerShipPlacer(testPlayerBoard);
+        System.out.println(testPlayerBoard.toString());
+
+        testComputerShipPlacer.ComputerShipPlacer(testComputerBoard);
+        System.out.println(testComputerBoard.toString());
+    }
 
     @Test
     public void Board_Test(){
@@ -42,11 +54,21 @@ public class BoardTests{
         testBoard.AddShip(testShipSecond, centralPoint, 1);
         assertEquals(0, testBoard.board[4][3].getCell(), "Board test 3 : Failed");
         System.out.println("Board test 3 : Passed");
+
+        // Test 4
+        assertEquals(true, testBoard.ShipsState(), "Board test 4 : Failed");
+        System.out.println("Board test 4 : Passed");
+
+        //Test 5
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){
+                if(testBoard.board[i][j].getCell() == 1){
+                    testBoard.board[i][j].setEnemyHit(1); 
+                }
+            }
+        }
+        assertEquals(false, testBoard.ShipsState(), "Board test 5 : Failed");
+        System.out.println("Board test 5 : Passed");
     }
     
-    @Test
-    public void Ship_Test(){}
-
-    @Test
-    public void ShipType_Test(){}
 }
