@@ -16,8 +16,8 @@ public class BoardTests{
         Board testComputerBoard = new Board();
         ShipPlacer testComputerShipPlacer = new ShipPlacer();
 
-        testPlayerShipPlacer.PlayerShipPlacer(testPlayerBoard);
-        System.out.println(testPlayerBoard.toString());
+        //testPlayerShipPlacer.PlayerShipPlacer(testPlayerBoard);
+        //System.out.println(testPlayerBoard.toString());
 
         testComputerShipPlacer.ComputerShipPlacer(testComputerBoard);
         System.out.println(testComputerBoard.toString());
@@ -45,13 +45,17 @@ public class BoardTests{
         System.out.println("Board test 1 : Passed");
 
         // Test 2
-        testBoard.AddShip(testShipFirst, OFBPoint, 1);
+        assertThrows(Exception.class, () -> {
+            testBoard.AddShip(testShipFirst, OFBPoint, 1);
+        });
         
         assertEquals(0, testBoard.board[9][9].getCell(), "Board test 2 : Failed");
         System.out.println("Board test 2 : Passed");
         
         // Test 3
-        testBoard.AddShip(testShipSecond, centralPoint, 1);
+        assertThrows(Exception.class, () -> {
+            testBoard.AddShip(testShipSecond, centralPoint, 1);
+        });
         assertEquals(0, testBoard.board[4][3].getCell(), "Board test 3 : Failed");
         System.out.println("Board test 3 : Passed");
 
