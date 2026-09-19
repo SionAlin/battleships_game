@@ -43,7 +43,7 @@ public class ShipPlacer{
         Point TopPoint, BottomPoint;
 
         for(ShipType ship: ShipType.values()){
-            index = BiggestArea();
+            index = BiggestArea(ship.getLength());
             placement = Place(IntervalsX.get(index), IntervalsY.get(index), ship.getLength());
             board.AddShip(ship, placement.getPoint(), placement.getRotation());
         
@@ -57,7 +57,7 @@ public class ShipPlacer{
         }
     }
 
-    public int BiggestArea(){
+    public int BiggestArea(int shipLength){
         int maxArea = -1, maxI = -1;
         int area, width, height;
         for(int i = 0; i < IntervalsX.size(); i++){
@@ -66,6 +66,13 @@ public class ShipPlacer{
 
             width = xInterval.y - xInterval.x + 1;
             height = yInterval.y - yInterval.x + 1;
+            
+            if(width == 0 || height == 0)
+                continue;
+
+            if(width < shipLength && height < shipLength)
+                continue;
+
             area = width * height;
 
             if(maxArea < area){
@@ -76,7 +83,7 @@ public class ShipPlacer{
         return maxI;
     }
 
-    public Placement Place(Point xInterval, Point yInterval, int shipLength){
+    public Placement Place(Point xInterval, Point yInterval, int shipLength) throws Exception{
         int rotation;
         Random rand = new Random();
         
@@ -127,6 +134,11 @@ public class ShipPlacer{
             IntervalsX.add(XInterval);
             YInterval = new Point(point.y, (point.y - 1) + ShipLength);
             IntervalsY.add(YInterval);
+
+            XInterval = new Point(TopPoint.x, BottomPoint.x);
+            IntervalsX.add(XInterval);
+            YInterval = new Point(point.y + ShipLength, BottomPoint.y);
+            IntervalsY.add(YInterval);
         }else{
 
             XInterval = new Point(TopPoint.x, point.x - 1);
@@ -138,12 +150,11 @@ public class ShipPlacer{
             IntervalsX.add(XInterval);
             YInterval = new Point(point.y, point.y);
             IntervalsY.add(YInterval);
+
+            XInterval = new Point(TopPoint.x, BottomPoint.x);
+            IntervalsX.add(XInterval);
+            YInterval = new Point(point.y + 1, BottomPoint.y);
+            IntervalsY.add(YInterval);
         }
-
-        XInterval = new Point(TopPoint.x, BottomPoint.x);
-        YInterval = new Point(point.y + 1, BottomPoint.y);
-
-        IntervalsX.add(XInterval);
-        IntervalsY.add(YInterval);
     }
 }
