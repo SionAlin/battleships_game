@@ -1,1 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: battleship
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: battleship
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # - ./database/recipe.sql:/docker-entrypoint-initdb.d/recipe.sql
 
+volumes:
+  pgdata:

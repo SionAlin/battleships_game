@@ -44,7 +44,7 @@ public class PlayerProfile{
 
     public void WinRatio(){
         try{
-            WinRatio = Wins / (Wins + Losses);
+            WinRatio = (double)Wins / (Wins + Losses);
             WinRatio *= 100;
         }catch(ArithmeticException e){
             e.printStackTrace();
