@@ -17,6 +17,11 @@ public class ShipPlacer{
         IntervalsY.add(new Point(0,9));
     }
 
+    public ShipPlacer(PlacementInputProvider inputProvider){
+        this();
+        this.inputProvider = inputProvider;
+    }
+
     public void PlayerShipPlacer(Board board) throws Exception{
         Placement placement;
         Point point;

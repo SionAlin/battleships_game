@@ -19,7 +19,7 @@ public abstract class Player{
 
     public abstract void makeMove(Board opponentBoard);
 
-    public void RecordHit(boolean isHit){
+    public void recordHit(boolean isHit){
         if(isHit == true)
             CorrectHits++;
         else

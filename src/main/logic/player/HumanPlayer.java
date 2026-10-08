@@ -20,9 +20,9 @@ public class HumanPlayer extends Player{
             opponentBoard.board[point.x][point.y].setEnemyHit(1);
 
             if(opponentBoard.board[point.x][point.y].getCell() == 1){
-                RecordHit(true);
+                recordHit(true);
             }else{
-                RecordHit(false);
+                recordHit(false);
             }
         }
     }

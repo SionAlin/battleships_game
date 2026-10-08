@@ -22,35 +22,51 @@ public class AIPlayer extends Player{
     public void makeMove(Board opponentBoard){
         int index;
         Point point;
+    
+        if(NextPossibleHits.isEmpty() && BoardCells.isEmpty())
+            BoardCells = RemainingCells();
+
         if(NextPossibleHits.size() == 0){
 
             index = random.nextInt(BoardCells.size());
             point = BoardCells.remove(index);
 
+            if(PlayerBoard.board[point.x][point.y].getPlayerHit() == 1){
+                makeMove(opponentBoard);
+                return;
+            }
+
             opponentBoard.board[point.x][point.y].setEnemyHit(1);
             PlayerBoard.board[point.x][point.y].setPlayerHit(1);
 
             if(opponentBoard.board[point.x][point.y].getCell() == 1){
-                if(!(point.x == 0 || point.y == 0 || point.x == 9 || point.y == 9)){
-                    if(point.y > 0)
-                        NextPossibleHits.add(new Point(point.x, point.y-1));
-                    if(point.y < 9)
-                        NextPossibleHits.add(new Point(point.x, point.y+1));
-                    if(point.x > 0)
-                        NextPossibleHits.add(new Point(point.x-1, point.y));
-                    if(point.x < 9)
-                        NextPossibleHits.add(new Point(point.x+1, point.y));
-                }
+                recordHit(true);
+
+                if(point.y > 0)
+                    NextPossibleHits.add(new Point(point.x, point.y-1));
+                if(point.y < 9)
+                    NextPossibleHits.add(new Point(point.x, point.y+1));
+                if(point.x > 0)
+                    NextPossibleHits.add(new Point(point.x-1, point.y));
+                if(point.x < 9)
+                    NextPossibleHits.add(new Point(point.x+1, point.y));  
+            }else{
+                recordHit(false);
             }
         }else{
             index = random.nextInt(NextPossibleHits.size());
             point = NextPossibleHits.remove(index);
 
+            if(PlayerBoard.board[point.x][point.y].getPlayerHit() == 1){
+                makeMove(opponentBoard);
+                return;
+            }
+
             opponentBoard.board[point.x][point.y].setEnemyHit(1);
             PlayerBoard.board[point.x][point.y].setPlayerHit(1);
 
             if(opponentBoard.board[point.x][point.y].getCell() == 1){
-                RecordHit(true);
+                recordHit(true);
                 
                 if(!(point.x == 0 || point.y == 0 || point.x == 9 || point.y == 9)){
                     if(PlayerBoard.board[point.x-1][point.y].getPlayerHit() == 1 && opponentBoard.board[point.x-1][point.y].getCell() == 1 && PlayerBoard.board[point.x+1][point.y].getPlayerHit() == 0)
@@ -64,9 +80,22 @@ public class AIPlayer extends Player{
                 }
 
             }else{
-                RecordHit(false);
+                recordHit(false);
             }
         }
+    }
+
+    private ArrayList<Point> RemainingCells(){
+        ArrayList<Point> list = new ArrayList<Point>();
+
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){
+                if(PlayerBoard.board[i][j].getPlayerHit() == 0)
+                    list.add(new Point(i, j));
+            }
+        }
+
+        return list;
     }
 
     private ArrayList<Point> ConvenientBoardCells(){
