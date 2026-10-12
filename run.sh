@@ -1,1 +1,1 @@
-java -cp Main
+java -cp bin Main

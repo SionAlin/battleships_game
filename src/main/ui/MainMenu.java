@@ -1,3 +1,5 @@
+package main.ui;
+
 import java.io.*;
 import java.awt.*;
 import javax.swing.*;
@@ -6,10 +8,6 @@ public class MainMenu{
     
     private JFrame Frame;
 
-    public static void main(String[] args){
-        SwingUtilities.invokeLater(MainMenu::new);
-    }
-    
     public MainMenu(){
         int width = 1200;
         int height = 800;
@@ -18,6 +16,9 @@ public class MainMenu{
         this.Frame.setSize(width, height);
         this.Frame.setLocationRelativeTo(null);
         
+        ImageIcon icon = new ImageIcon("./src/resources/BattleshipsIcon.png");
+        this.Frame.setIconImage(icon.getImage());
+
         PaperPanel background = new PaperPanel();
         background.setLayout(new BorderLayout());
         
@@ -40,7 +41,7 @@ public class MainMenu{
         centerPanel.setOpaque(false);
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 
-        ImageIcon originalIcon = new ImageIcon("../../resources/battleshipsLogo.png");
+        ImageIcon originalIcon = new ImageIcon("./src/resources/BattleshipsLogo.png");
         Image scaledImage = originalIcon.getImage().getScaledInstance(600, 300, Image.SCALE_SMOOTH);
         ImageIcon resizedIcon = new ImageIcon(scaledImage);
         JLabel imageLabel = new JLabel(resizedIcon);

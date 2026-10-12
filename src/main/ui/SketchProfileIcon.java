@@ -1,3 +1,5 @@
+package main.ui;
+
 import java.awt.*;
 import java.awt.geom.*;
 import javax.swing.*;
