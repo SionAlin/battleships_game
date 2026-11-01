@@ -3,51 +3,63 @@ package main.model;
 public class PlayerProfile{
         
     private String PlayerName;
-    private int Wins;
-    private int Losses;
-    private double WinRatio;
+    private int correctHits;
+    private int wrongHits;
+    private int wins;
+    private int losses;
+    private double hitRatio;
 
-    public PlayerProfile(String PlayerName, int Wins, int Losses, double WinRatio){
+    public PlayerProfile(String PlayerName, int correctHits, int wrongHits){
         this.PlayerName = PlayerName;
-        this.Wins = Wins;
-        this.Losses = Losses;
-        this.WinRatio = WinRatio;
+        this.correctHits = correctHits;
+        this.wrongHits = wrongHits;
+        this.wins = 0;
+        this.losses = 0;
+        this.HitRatio();
     }
 
     public PlayerProfile(String PlayerProfile){
-        this(PlayerProfile, 0, 0, 0.0);
+        this(PlayerProfile, 0, 0);
     }
-    
+
     public String getPlayerName(){
         return PlayerName;
     }
 
-    public int getWins(){
-        return Wins;
+    public int getCorrectHits(){
+        return correctHits;
     }
 
-    public int getLosses(){
-        return Losses;
+    public int getWrongHits(){
+        return wrongHits;
     }
 
-    public double getWinRatio(){
-        return WinRatio;
+    public double getHitRatio(){
+        return hitRatio;
     }
 
-    public void MatchWon(){
-        Wins += 1;
+    public int[] getRecord(){
+        return new int[]{wins, losses};
     }
 
-    public void MatchLost(){
-        Losses += 1;
+    public void updateHits(int correctHits, int wrongHits){
+        this.correctHits += correctHits;
+        this.wrongHits += wrongHits;
     }
 
-    public void WinRatio(){
-        try{
-            WinRatio = (double)Wins / (Wins + Losses);
-            WinRatio *= 100;
-        }catch(ArithmeticException e){
-            e.printStackTrace();
+    public void updateRecord(int[] record){
+        if(record[0] >= 0 && record[1] >= 0){
+            wins = record[0];
+            losses = record[1];
+        }
+    }
+
+    public void HitRatio(){
+        if(correctHits + wrongHits != 0){
+            hitRatio = (double)correctHits / (correctHits + wrongHits);
+            hitRatio *= 100;
+        }else{
+            hitRatio = 0;
         }
     }
 

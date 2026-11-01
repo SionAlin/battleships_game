@@ -10,7 +10,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      # - ./database/recipe.sql:/docker-entrypoint-initdb.d/recipe.sql
+      - ./src/main/database/recipe.sql:/docker-entrypoint-initdb.d/recipe.sql
 
 volumes:
   pgdata:

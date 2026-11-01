@@ -7,6 +7,8 @@ import javax.swing.*;
 public class MainMenu{
     
     private JFrame Frame;
+    private CardLayout Cards = new CardLayout();
+    private JPanel root = new JPanel(Cards);
 
     public MainMenu(){
         int width = 1200;
@@ -19,19 +21,32 @@ public class MainMenu{
         ImageIcon icon = new ImageIcon("./src/resources/BattleshipsIcon.png");
         this.Frame.setIconImage(icon.getImage());
 
+        root.add(BuildHome(), "HOME");
+        root.add(new ProfileMenu(this), "PROFILE");
+        root.add(new LeaderboardMenu(this), "LEADERBOARD");
+        root.add(new PlayerVSComputerMenu(this), "PVC");
+        root.add(new PlayerVSPlayerMenu(this), "PVP");
+
+        this.Frame.setContentPane(root);
+        this.Frame.setVisible(true);
+    }
+
+    public void Show(String screen){
+        Cards.show(root, screen);
+    }
+
+    private PaperPanel BuildHome(){
         PaperPanel background = new PaperPanel();
         background.setLayout(new BorderLayout());
-        
-        this.Frame.setContentPane(background);
 
-        SketchButton profileButton = new SketchButton("", () -> {
-            System.out.println("Profile");
-        });
-
+        SketchButton profileButton = new SketchButton("", () -> Show("PROFILE"));
         profileButton.setIcon(new SketchProfileIcon());
         profileButton.setPreferredSize(new Dimension(60, 60));
         profileButton.setToolTipText("Profile");
-
+        SketchButton pvcButton = new SketchButton("PLAYER VS COMPUTER", () -> Show("PVC"));
+        SketchButton pvpButton = new SketchButton("PLAYER VS PLAYER", () -> Show("PVP"));
+        SketchButton leaderboardButton = new SketchButton("LEADERBOARD", () -> Show("LEADERBOARD"));
+        
         JPanel topRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         topRightPanel.setOpaque(false);
         topRightPanel.add(profileButton);
@@ -46,16 +61,6 @@ public class MainMenu{
         ImageIcon resizedIcon = new ImageIcon(scaledImage);
         JLabel imageLabel = new JLabel(resizedIcon);
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        SketchButton pvcButton = new SketchButton("PLAYER VS COMPUTER", () -> {
-            System.out.println("Player vs Computer");
-        });
-        SketchButton pvpButton = new SketchButton("PLAYER VS PLAYER", () -> {
-            System.out.println("Player vs Player");
-        });
-        SketchButton leaderboardButton = new SketchButton("LEADERBOARD", () -> {
-            System.out.println("Leaderboard");
-        });
 
         Dimension mainButtonsDimension = new Dimension(400, 600);
 
@@ -78,7 +83,7 @@ public class MainMenu{
         centerPanel.add(Box.createVerticalGlue());
 
         background.add(centerPanel, BorderLayout.CENTER);
-
-        this.Frame.setVisible(true);
+        return background;
     }
+
 }
