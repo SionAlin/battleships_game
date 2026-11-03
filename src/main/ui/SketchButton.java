@@ -10,7 +10,7 @@ public class SketchButton extends JComponent{
     private double angle = 0;
     private double phase = Math.random() * Math.PI * 2;
 
-    private final String text;
+    private String text;
     private final Runnable action;
 
     private boolean hovered = false;
@@ -75,6 +75,14 @@ public class SketchButton extends JComponent{
     public void setIcon(SketchProfileIcon icon){
         this.icon = icon;
         repaint();
+    }
+    
+    public void setText(String text){
+        this.text = text;
+    }
+
+    public String getText(){
+        return text;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package main.ui;
 
+import main.model.PlayerProfile;
 import java.io.*;
 import java.awt.*;
 import javax.swing.*;
@@ -9,6 +10,7 @@ public class MainMenu{
     private JFrame Frame;
     private CardLayout Cards = new CardLayout();
     private JPanel root = new JPanel(Cards);
+    private PlayerProfile selected;
 
     public MainMenu(){
         int width = 1200;
@@ -26,9 +28,18 @@ public class MainMenu{
         root.add(new LeaderboardMenu(this), "LEADERBOARD");
         root.add(new PlayerVSComputerMenu(this), "PVC");
         root.add(new PlayerVSPlayerMenu(this), "PVP");
-
+        
+        this.Frame.setResizable(false);
         this.Frame.setContentPane(root);
         this.Frame.setVisible(true);
+    }
+    
+    public void setSelectedProfile(PlayerProfile profile){
+        this.selected = profile;
+    }
+
+    public PlayerProfile getSelectedProfile(){
+        return selected;
     }
 
     public void Show(String screen){
