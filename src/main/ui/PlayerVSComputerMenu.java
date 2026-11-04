@@ -125,20 +125,26 @@ public class PlayerVSComputerMenu extends PaperPanel{
         errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
         
         SketchButton playButton = new SketchButton("PLAY", () -> {
-            PlayerProfile player, computer;
-            
-            if(playerOneButton.getText().equals("Player")){
-                player = getSelectedProfileOne();
-                computer = getSelectedProfileTwo();
-            }else{
-                player = getSelectedProfileTwo();
-                computer = getSelectedProfileOne();
+           
+            if(getSelectedProfileOne() == null || getSelectedProfileTwo() == null){
+                errorLabel.setText("Who Takes the Helm?");
+                return;
             }
 
-            if(player.getPlayerName().equals(computer.getPlayerName())){
+            if(playerOneButton.getText().equals("Player")){
+                menu.setPlayer(getSelectedProfileOne());
+                menu.setComputer(getSelectedProfileTwo());
+            }else{
+                menu.setComputer(getSelectedProfileOne());
+                menu.setPlayer(getSelectedProfileTwo());
+            }
+            
+            if(menu.getPlayerProfile().getPlayerName().equals(menu.getComputerProfile().getPlayerName())){
                 errorLabel.setText("You can't play against yourself!");
             }else{
-                System.out.println("Player: " + player.getPlayerName() + "\nComputer: " + computer.getPlayerName());
+                menu.StartMatch(getSelectedProfileOne(), getSelectedProfileTwo());
+                System.out.println(menu.getMatchRecord().getPlayerOne().getPlayerName() + " " + menu.getMatchRecord().getPlayerTwo().getPlayerName());
+                menu.Show("SHIPPLACER");
                 errorLabel.setText("");
             }
         });

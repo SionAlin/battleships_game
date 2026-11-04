@@ -1,6 +1,7 @@
 package main.ui;
 
-import main.model.PlayerProfile;
+import main.model.*;
+import main.logic.player.*;
 import java.io.*;
 import java.awt.*;
 import javax.swing.*;
@@ -10,7 +11,12 @@ public class MainMenu{
     private JFrame Frame;
     private CardLayout Cards = new CardLayout();
     private JPanel root = new JPanel(Cards);
+
     private PlayerProfile selected;
+    private PlayerProfile playerProfile, computerProfile;
+    private HumanPlayer playerPlayer = null;
+    private AIPlayer computerPlayer = null;
+    private MatchRecord matchRecord = null;
 
     public MainMenu(){
         int width = 1200;
@@ -28,6 +34,7 @@ public class MainMenu{
         root.add(new LeaderboardMenu(this), "LEADERBOARD");
         root.add(new PlayerVSComputerMenu(this), "PVC");
         root.add(new PlayerVSPlayerMenu(this), "PVP");
+        root.add(new ShipPlacerMenu(this), "SHIPPLACER");
         
         this.Frame.setResizable(false);
         this.Frame.setContentPane(root);
@@ -38,8 +45,42 @@ public class MainMenu{
         this.selected = profile;
     }
 
+    public void setPlayer(PlayerProfile profile){
+        this.playerProfile = profile;
+        this.playerPlayer = new HumanPlayer(profile.getPlayerName());
+    }
+
+    public void setComputer(PlayerProfile profile){
+        this.computerProfile = profile;
+        this.computerPlayer = new AIPlayer(profile.getPlayerName());
+    }
+
     public PlayerProfile getSelectedProfile(){
         return selected;
+    }
+    
+    public PlayerProfile getPlayerProfile(){
+        return playerProfile;
+    }
+
+    public HumanPlayer getPlayerPlayer(){
+        return playerPlayer;
+    }
+
+    public PlayerProfile getComputerProfile(){
+        return computerProfile;
+    }
+
+    public AIPlayer getComputerPlayer(){
+        return computerPlayer;
+    }
+    
+    public MatchRecord getMatchRecord(){
+        return matchRecord;
+    }
+
+    public void StartMatch(PlayerProfile profileOne, PlayerProfile profileTwo){
+        matchRecord = new MatchRecord(profileOne, profileTwo);
     }
 
     public void Show(String screen){

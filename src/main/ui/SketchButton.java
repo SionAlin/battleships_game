@@ -68,6 +68,9 @@ public class SketchButton extends JComponent{
                 if(activate && action != null){
                     action.run();
                 }
+
+                if(!isEnabled()) return;
+                action.run();
             }
         });
     }
@@ -84,7 +87,14 @@ public class SketchButton extends JComponent{
     public String getText(){
         return text;
     }
-
+    
+    @Override
+    public void setEnabled(boolean status){
+        super.setEnabled(status);
+        setCursor(Cursor.getPredefinedCursor(status ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+        repaint();
+    }
+    
     @Override
     protected void paintComponent(Graphics g){
         Graphics2D g2 = (Graphics2D) g.create();
@@ -134,6 +144,10 @@ public class SketchButton extends JComponent{
         g2.setColor(ink);
         g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2.draw(outline);
+
+        if(!isEnabled()){
+            g2.setColor(new Color(150, 150, 150));
+        }
 
         g2.setStroke(new BasicStroke(1.5f));
         g2.drawLine(10, 6, w - 7, 10);
