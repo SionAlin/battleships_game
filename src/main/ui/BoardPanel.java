@@ -8,10 +8,10 @@ public class BoardPanel extends JPanel{
 
     private static final int GRID_SIZE = 10;
     private static final Color PAPER = new Color(253, 252, 246);
-    private static final Color GRID = new Color(150, 190, 225, 115);
-    private static final Color OK = new Color(60, 180, 90, 130);
-    private static final Color BAD = new Color(210, 60, 60, 130);
-    private static final Color SHIP = new Color(90, 100, 120, 170);
+    private static final Color GRID = new Color(35, 75, 155);
+    private static final Color OK = new Color(17, 136, 123);
+    private static final Color BAD = new Color(172, 50, 53);
+    private static final Color SHIP = new Color(35, 75, 155);
 
     private final boolean[][] occupied = new boolean[GRID_SIZE][GRID_SIZE];
 
@@ -135,6 +135,21 @@ public class BoardPanel extends JPanel{
         repaint();
         if (onShipPlaced != null) onShipPlaced.run();
     }
+    
+    private void hatchCell(Graphics2D g2, int x, int y, int size){
+        Shape oldClip = g2.getClip();
+        Stroke oldStroke = g2.getStroke();
+
+        g2.clipRect(x, y, size, size);
+        g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+        for(int d = -size; d < 2 * size; d += 8){
+            g2.drawLine(x + d, y + size, x + d + size, y);
+        }
+
+        g2.setClip(oldClip);
+        g2.setStroke(oldStroke);
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -149,7 +164,7 @@ public class BoardPanel extends JPanel{
         for (int r = 0; r < GRID_SIZE; r++) {
             for (int c = 0; c < GRID_SIZE; c++) {
                 if (occupied[r][c]) {
-                    g2.fillRect(ox + c * cs, oy + r * cs, cs, cs);
+                    hatchCell(g2, ox + c * cs, oy + r * cs, cs);
                 }
             }
         }
@@ -160,7 +175,7 @@ public class BoardPanel extends JPanel{
                 int c = horizontal ? hoverCol + i : hoverCol;
                 int r = horizontal ? hoverRow : hoverRow + i;
                 if (c < GRID_SIZE && r < GRID_SIZE) {
-                    g2.fillRect(ox + c * cs, oy + r * cs, cs, cs);
+                    hatchCell(g2, ox + c * cs, oy + r * cs, cs);
                 }
             }
         }

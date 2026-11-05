@@ -19,6 +19,8 @@ public class SketchButton extends JComponent{
     private SketchProfileIcon icon;
 
     private final Color ink = new Color(35, 75, 155);
+    private final Color redInk = new Color(172, 50, 53);
+
     private final Timer rotationTimer = new Timer(40, e -> {
         phase += 0.025;
         angle = 1.02 * Math.sin(phase);
@@ -53,7 +55,7 @@ public class SketchButton extends JComponent{
 
             @Override
             public void mousePressed(MouseEvent e){
-                if(SwingUtilities.isLeftMouseButton(e)){
+                if(SwingUtilities.isLeftMouseButton(e) && isEnabled()){
                     pressed = true;
                     repaint();
                 }
@@ -65,12 +67,9 @@ public class SketchButton extends JComponent{
                 pressed = false;
                 repaint();
 
-                if(activate && action != null){
+                if(activate && isEnabled() && action != null){
                     action.run();
                 }
-
-                if(!isEnabled()) return;
-                action.run();
             }
         });
     }
@@ -100,6 +99,8 @@ public class SketchButton extends JComponent{
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     
+        g2.setColor(isEnabled() ? ink : redInk);
+        
         g2.rotate(
             Math.toRadians(angle),
             getWidth() / 2.0,
@@ -130,7 +131,6 @@ public class SketchButton extends JComponent{
             Shape oldClip = g2.getClip();
             g2.clip(outline);
 
-            g2.setColor(new Color(35, 75, 155, 110));
             g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
             for(int x = -h; x < w + h; x += 15){
@@ -141,13 +141,8 @@ public class SketchButton extends JComponent{
 
         }
 
-        g2.setColor(ink);
         g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2.draw(outline);
-
-        if(!isEnabled()){
-            g2.setColor(new Color(150, 150, 150));
-        }
 
         g2.setStroke(new BasicStroke(1.5f));
         g2.drawLine(10, 6, w - 7, 10);
@@ -162,7 +157,6 @@ public class SketchButton extends JComponent{
         g2.drawLine(w - 4, h - 7, 9, h - 1);
         g2.drawLine(w - 7, h - 1, 5, h - 5);
 
-        g2.setColor(ink);
         g2.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
 
         FontMetrics fm = g2.getFontMetrics();

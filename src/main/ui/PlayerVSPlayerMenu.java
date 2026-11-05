@@ -232,7 +232,7 @@ public class PlayerVSPlayerMenu extends PaperPanel{
                     Shape oldClip = g2.getClip();
                     g2.clip(outline);
 
-                    g2.setColor(new Color(35, 75, 155, 110));
+                    g2.setColor(ink);
                     g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
                     for(int x = -h; x < w + h; x += 15){

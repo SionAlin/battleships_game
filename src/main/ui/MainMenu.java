@@ -12,6 +12,9 @@ public class MainMenu{
     private CardLayout Cards = new CardLayout();
     private JPanel root = new JPanel(Cards);
 
+    private ShipPlacerMenu shipPlacerMenu;
+    private InGameMenu inGameMenu;
+
     private PlayerProfile selected;
     private PlayerProfile playerProfile, computerProfile;
     private HumanPlayer playerPlayer = null;
@@ -34,8 +37,13 @@ public class MainMenu{
         root.add(new LeaderboardMenu(this), "LEADERBOARD");
         root.add(new PlayerVSComputerMenu(this), "PVC");
         root.add(new PlayerVSPlayerMenu(this), "PVP");
-        root.add(new ShipPlacerMenu(this), "SHIPPLACER");
+
+        shipPlacerMenu = new ShipPlacerMenu(this);
+        root.add(shipPlacerMenu, "SHIPPLACER");
         
+        inGameMenu = new InGameMenu(this);
+        root.add(inGameMenu, "INGAME");
+
         this.Frame.setResizable(false);
         this.Frame.setContentPane(root);
         this.Frame.setVisible(true);
@@ -81,6 +89,14 @@ public class MainMenu{
 
     public void StartMatch(PlayerProfile profileOne, PlayerProfile profileTwo){
         matchRecord = new MatchRecord(profileOne, profileTwo);
+    }
+
+    public ShipPlacerMenu getShipPlacerMenu(){
+        return shipPlacerMenu;
+    }
+    
+    public InGameMenu getInGameMenu(){
+        return inGameMenu;
     }
 
     public void Show(String screen){

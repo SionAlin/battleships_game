@@ -143,7 +143,7 @@ public class PlayerVSComputerMenu extends PaperPanel{
                 errorLabel.setText("You can't play against yourself!");
             }else{
                 menu.StartMatch(getSelectedProfileOne(), getSelectedProfileTwo());
-                System.out.println(menu.getMatchRecord().getPlayerOne().getPlayerName() + " " + menu.getMatchRecord().getPlayerTwo().getPlayerName());
+                menu.getShipPlacerMenu().Refresh();
                 menu.Show("SHIPPLACER");
                 errorLabel.setText("");
             }
@@ -166,9 +166,7 @@ public class PlayerVSComputerMenu extends PaperPanel{
 
     private void Refresh(){
         listModel.clear();
-
         try{
-            
             List<PlayerProfile> profiles = repository.findAll();
 
             for(PlayerProfile profile : profiles){
