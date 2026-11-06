@@ -1,6 +1,7 @@
 package main.logic.player;
 
 import main.model.*;
+import main.logic.ShipPlacer;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
@@ -13,84 +14,62 @@ public class AIPlayer extends Player{
     
     public AIPlayer(String PlayerName){
         super(PlayerName);
+        
         this.random = new Random();
         this.BoardCells = this.ConvenientBoardCells();
         this.NextPossibleHits = new ArrayList<Point>();
     }
-    
+
     @Override
     public void makeMove(Board opponentBoard){
-        int index;
-        Point point;
-    
         if(NextPossibleHits.isEmpty() && BoardCells.isEmpty())
             BoardCells = RemainingCells();
+        
+        boolean hunting = NextPossibleHits.isEmpty();
+        ArrayList<Point> source = hunting ? BoardCells : NextPossibleHits;
+        Point p = source.remove(random.nextInt(source.size()));
 
-        if(NextPossibleHits.size() == 0){
-
-            index = random.nextInt(BoardCells.size());
-            point = BoardCells.remove(index);
-
-            if(PlayerBoard.board[point.x][point.y].getPlayerHit() == 1){
-                makeMove(opponentBoard);
-                return;
-            }
-
-            opponentBoard.board[point.x][point.y].setEnemyHit(1);
-            PlayerBoard.board[point.x][point.y].setPlayerHit(1);
-
-            if(opponentBoard.board[point.x][point.y].getCell() == 1){
-                recordHit(true);
-
-                if(point.y > 0)
-                    NextPossibleHits.add(new Point(point.x, point.y-1));
-                if(point.y < 9)
-                    NextPossibleHits.add(new Point(point.x, point.y+1));
-                if(point.x > 0)
-                    NextPossibleHits.add(new Point(point.x-1, point.y));
-                if(point.x < 9)
-                    NextPossibleHits.add(new Point(point.x+1, point.y));  
-            }else{
-                recordHit(false);
-            }
-        }else{
-            index = random.nextInt(NextPossibleHits.size());
-            point = NextPossibleHits.remove(index);
-
-            if(PlayerBoard.board[point.x][point.y].getPlayerHit() == 1){
-                makeMove(opponentBoard);
-                return;
-            }
-
-            opponentBoard.board[point.x][point.y].setEnemyHit(1);
-            PlayerBoard.board[point.x][point.y].setPlayerHit(1);
-
-            if(opponentBoard.board[point.x][point.y].getCell() == 1){
-                recordHit(true);
-                
-                if(!(point.x == 0 || point.y == 0 || point.x == 9 || point.y == 9)){
-                    if(PlayerBoard.board[point.x-1][point.y].getPlayerHit() == 1 && opponentBoard.board[point.x-1][point.y].getCell() == 1 && PlayerBoard.board[point.x+1][point.y].getPlayerHit() == 0)
-                        NextPossibleHits.add(new Point(point.x+1, point.y));
-                    if(PlayerBoard.board[point.x+1][point.y].getPlayerHit() == 1 && opponentBoard.board[point.x+1][point.y].getCell() == 1 && PlayerBoard.board[point.x-1][point.y].getPlayerHit() == 0)
-                        NextPossibleHits.add(new Point(point.x-1, point.y));
-                    if(PlayerBoard.board[point.x][point.y-1].getPlayerHit() == 1 && opponentBoard.board[point.x][point.y-1].getCell() == 1 && PlayerBoard.board[point.x][point.y+1].getPlayerHit() == 0)
-                        NextPossibleHits.add(new Point(point.x, point.y+1));
-                    if(PlayerBoard.board[point.x][point.y+1].getPlayerHit() == 1 && opponentBoard.board[point.x][point.y+1].getCell() == 1 && PlayerBoard.board[point.x][point.y-1].getPlayerHit() == 0)
-                        NextPossibleHits.add(new Point(point.x, point.y-1));
-                }
-
-            }else{
-                recordHit(false);
-            }
+        ShotResult result = fire(opponentBoard, p.x, p.y);
+        if(result == ShotResult.ALREADY_SHOT){
+            makeMove(opponentBoard);
+            return;
         }
+        if(result != ShotResult.HIT) return;
+
+        if(hunting){
+            if(p.y > 0) NextPossibleHits.add(new Point(p.x, p.y - 1));
+            if(p.y < 9) NextPossibleHits.add(new Point(p.x, p.y + 1));
+            if(p.x > 0) NextPossibleHits.add(new Point(p.x - 1, p.y));
+            if(p.x < 9) NextPossibleHits.add(new Point(p.x + 1, p.y));
+        }else if(p.x > 0 && p.x < 9 && p.y > 0 && p.y < 9){
+            if(myHit(p.x - 1, p.y) && unshot(p.x + 1, p.y)) NextPossibleHits.add(new Point(p.x + 1, p.y));
+            if(myHit(p.x + 1, p.y) && unshot(p.x - 1, p.y)) NextPossibleHits.add(new Point(p.x - 1, p.y));
+            if(myHit(p.x, p.y - 1) && unshot(p.x, p.y + 1)) NextPossibleHits.add(new Point(p.x, p.y + 1));
+            if(myHit(p.x, p.y + 1) && unshot(p.x, p.y - 1)) NextPossibleHits.add(new Point(p.x, p.y - 1));
+        }
+    }
+    
+    public void PlaceShips() throws Exception{
+        new ShipPlacer().ComputerShipPlacer(PlayerBoard);
+    }
+
+    private boolean myHit(int x, int y){ 
+        Cell[][] board = PlayerBoard.getBoard();
+        return board[x][y].getPlayerHit() == 2;
+    }
+
+    private boolean unshot(int x, int y){
+        Cell[][] board = PlayerBoard.getBoard();
+        return board[x][y].getPlayerHit() == 0;
     }
 
     private ArrayList<Point> RemainingCells(){
         ArrayList<Point> list = new ArrayList<Point>();
+        Cell[][] board = PlayerBoard.getBoard();
 
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 10; j++){
-                if(PlayerBoard.board[i][j].getPlayerHit() == 0)
+                if(board[i][j].getPlayerHit() == 0)
                     list.add(new Point(i, j));
             }
         }

@@ -3,7 +3,9 @@ package main.logic;
 import main.model.*;
 import main.logic.player.*;
 
-public class GameEngine{
+public class GameEngine{}
+
+/*public class GameEngine{
    
     public static void main(String[] args){
         new GameEngine();
@@ -170,4 +172,6 @@ public class GameEngine{
             System.out.println();
     }
 
-}
+}*/
+
+

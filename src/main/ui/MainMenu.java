@@ -1,6 +1,7 @@
 package main.ui;
 
 import main.model.*;
+import main.logic.ShipPlacer;
 import main.logic.player.*;
 import java.io.*;
 import java.awt.*;

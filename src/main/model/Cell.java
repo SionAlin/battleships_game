@@ -2,8 +2,8 @@ package main.model;
 
 public class Cell{
     private int cell; //(0)water or (1)ship part 
-    private int EnemyHit; //(0)not hit or (1)hit
-    private int PlayerHit; //(0)not hit or (1)hit
+    private int EnemyHit; //(0)not shot, (1)miss, (3)hit
+    private int PlayerHit; //(0)not shot, (1)miss, (2)hit 
 
     public Cell(int cell){
         this.cell = cell;
@@ -34,16 +34,8 @@ public class Cell{
     }
 
     public void setPlayerHit(int PlayerHit){
-        if(PlayerHit == 0 || PlayerHit == 1)
+        if(PlayerHit >= 0 || PlayerHit <= 2)
             this.PlayerHit = PlayerHit;
     }
         
-    public void GetDamage(){
-        EnemyHit = 1;
-    }
-
-    public void DoDamage(){
-        PlayerHit = 1;
-    }
-    
 }

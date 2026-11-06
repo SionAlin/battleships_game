@@ -15,7 +15,7 @@ import javax.swing.event.DocumentListener;
 public class ProfileMenu extends PaperPanel{
     
     private final Color ink = new Color(35, 75, 155);
-    private static final String ROW_FORMAT = "%-6s%-20s%19s%19s%25s";
+    private static final String ROW_FORMAT = "%-6s%-20s%19s%19s%25s%.0f%%";
     
     private List<PlayerProfile> allProfiles = new ArrayList<>();
     private final DefaultListModel<PlayerProfile> listModel = new DefaultListModel<>();
@@ -210,7 +210,7 @@ public class ProfileMenu extends PaperPanel{
             super.getListCellRendererComponent(list, value, index, isSelected, false);
 
             PlayerProfile profile = (PlayerProfile) value;
-            setText(String.format(ROW_FORMAT, " ~> ", profile.getPlayerName(), profile.getCorrectHits() + " C. Hits", profile.getWrongHits() + " W. Hits", profile.getHitRatio() + " Hit Ratio"));
+            setText(String.format(ROW_FORMAT, " ~> ", profile.getPlayerName(), profile.getCorrectHits() + " C. Hits", profile.getWrongHits() + " W. Hits", "Hit Ratio ", profile.getHitRatio()));
             setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
             setForeground(ink);
             setBackground(new Color(205, 218, 242));

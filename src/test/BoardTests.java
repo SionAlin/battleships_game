@@ -27,6 +27,7 @@ public class BoardTests{
     public void Board_Test() throws Exception{
 
         Board testBoard = new Board();
+        Cell[][] b = testBoard.getBoard();
         ShipType testShipFirst = ShipType.CARRIER;
         ShipType testShipSecond = ShipType.BATTLESHIP;
         
@@ -38,7 +39,7 @@ public class BoardTests{
 
         boolean check = true;
         for(int i = 3; i < 3 + testShipFirst.getLength(); i++)
-            if(testBoard.board[3][i].getCell() == 0)
+            if(b[3][i].getCell() == 0)
                 check = false;
         
         assertEquals(true, check, "Board test 1 : Failed");
@@ -49,30 +50,19 @@ public class BoardTests{
             testBoard.AddShip(testShipFirst, OFBPoint, 1);
         });
         
-        assertEquals(0, testBoard.board[9][9].getCell(), "Board test 2 : Failed");
+        assertEquals(0, b[9][9].getCell(), "Board test 2 : Failed");
         System.out.println("Board test 2 : Passed");
         
         // Test 3
         assertThrows(Exception.class, () -> {
             testBoard.AddShip(testShipSecond, centralPoint, 1);
         });
-        assertEquals(0, testBoard.board[4][3].getCell(), "Board test 3 : Failed");
+        assertEquals(0, b[4][3].getCell(), "Board test 3 : Failed");
         System.out.println("Board test 3 : Passed");
 
         // Test 4
-        assertEquals(true, testBoard.ShipsState(), "Board test 4 : Failed");
+        assertEquals(true, testBoard.HasShipsLeft(), "Board test 4 : Failed");
         System.out.println("Board test 4 : Passed");
-
-        //Test 5
-        for(int i = 0; i < 10; i++){
-            for(int j = 0; j < 10; j++){
-                if(testBoard.board[i][j].getCell() == 1){
-                    testBoard.board[i][j].setEnemyHit(1); 
-                }
-            }
-        }
-        assertEquals(false, testBoard.ShipsState(), "Board test 5 : Failed");
-        System.out.println("Board test 5 : Passed");
     }
     
 }

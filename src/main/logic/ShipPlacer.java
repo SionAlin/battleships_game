@@ -26,12 +26,14 @@ public class ShipPlacer{
         Placement placement;
         Point point;
         Boolean valid;
+        Cell[][] b = board.getBoard();
         for(ShipType ship: ShipType.values()){
             do{
                 placement = inputProvider.getPlacement(ship);
                 point = placement.getPoint();
                 board.AddShip(ship, placement.getPoint(), placement.getRotation());
-                if(board.board[point.x][point.y].getCell() == 0){
+
+                if(b[point.x][point.y].getCell() == 0){
                     System.out.println("Ship placed wrong!");
                     valid = false;
                 }else{

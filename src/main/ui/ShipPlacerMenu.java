@@ -26,6 +26,8 @@ public class ShipPlacerMenu extends PaperPanel{
     private final SketchLabel errorLabel = new SketchLabel("Position Your Ships!");
     private final MainMenu menu;
 
+    private BoardPanel boardSection;
+
     private final Timer rotationTimer = new Timer(40, e -> {
         phase += 0.025;
         angle = 1.02 * Math.sin(phase);
@@ -59,7 +61,7 @@ public class ShipPlacerMenu extends PaperPanel{
         JPanel body = new JPanel(new GridBagLayout());
         body.setOpaque(false);
 
-        BoardPanel boardSection = new BoardPanel();
+        boardSection = new BoardPanel(new Board(), BoardPanel.Mode.PLACEMENT);
         boardSection.setPreferredSize(new Dimension(450, 450));
     
         JPanel borderHolder = SketchPanel();        
@@ -94,22 +96,21 @@ public class ShipPlacerMenu extends PaperPanel{
     }
     
     private JPanel BuildShipsPanel(BoardPanel board){
-        String[] names = {"Carrier", "Battleship", "Destroyer", "Submarine", "Patrolboat"};
-        int[] lengths = {5, 4, 3, 3, 2};
+        ShipType[] types = ShipType.values();
 
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        buttons = new SketchButton[names.length];
+        buttons = new SketchButton[types.length];
         int[] selected = {-1};
 
-        for(int i = 0; i < names.length; i++){
+        for(int i = 0; i < types.length; i++){
             final int idx = i;
-            buttons[i] = new SketchButton(names[i], () -> {
+            buttons[i] = new SketchButton(types[i].name(), () -> {
                 if(!buttons[idx].isEnabled()) return;
                 selected[0] = idx;
-                board.setSelectedShipLength(lengths[idx]);
+                board.setSelectedShip(types[idx]);
             });
             buttons[i].setAlignmentX(Component.CENTER_ALIGNMENT);
             buttons[i].setMaximumSize(new Dimension(300, 60));
@@ -137,6 +138,12 @@ public class ShipPlacerMenu extends PaperPanel{
         errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         readyButton = new SketchButton("READY", () -> {
+            try{
+                menu.getComputerPlayer().PlaceShips();
+            }catch(Exception e){
+                e.printStackTrace();
+                return;
+            }
             menu.getInGameMenu().Refresh();
             menu.Show("INGAME");
         });
@@ -167,6 +174,10 @@ public class ShipPlacerMenu extends PaperPanel{
         MatchRecord m = menu.getMatchRecord();
         if(m == null) return;
         subTitle.setText(m.getPlayerOne().getPlayerName() + " v.s. " + m.getPlayerTwo().getPlayerName());
+        
+        boardSection.setBoard(menu.getPlayerPlayer().getPlayerBoard());
+        for(SketchButton b : buttons) b.setEnabled(true);
+        
         updateReady();
     }
 

@@ -1,6 +1,7 @@
 package main.database;
 
 import main.model.*;
+import main.logic.player.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -52,7 +53,7 @@ public class PlayerProfileRepository extends Repository{
 
     }
 
-    public boolean updateHits(PlayerProfile player) throws SQLException{
+    public boolean updateHits(Player player) throws SQLException{
         String sql = "UPDATE players SET correct_hits = correct_hits + ?, wrong_hits = wrong_hits + ? WHERE name = ?";
         
         try(Connection conn = getConnection();

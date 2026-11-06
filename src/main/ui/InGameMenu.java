@@ -19,17 +19,29 @@ public class InGameMenu extends PaperPanel{
     private double angle = 0;
     private double phase = Math.random() * Math.PI * 2;
     private static final Font HEADER_FONT = new Font(Font.MONOSPACED, Font.BOLD, 45);
-    private static final Font LIST_FONT = new Font(Font.MONOSPACED, Font.BOLD, 18);
+    private static final Font LIST_FONT = new Font(Font.MONOSPACED, Font.BOLD, 20);
 
     private final Color ink = new Color(35, 75, 155);
 
     private final SketchLabel title = new SketchLabel("");
-    private final SketchLabel correctHitStatus = new SketchLabel("");
-    private final SketchLabel wrongHitStatus = new SketchLabel("");
-    private final SketchLabel ratioHitStatus = new SketchLabel("");
+    
+    private final SketchLabel namePlayerHitStatus = new SketchLabel("");
+    private final SketchLabel statsPlayerHitStatus = new SketchLabel("");
+    private final SketchLabel ratioPlayerHitStatus = new SketchLabel("");
+
+    private final SketchLabel nameComputerHitStatus = new SketchLabel("");
+    private final SketchLabel statsComputerHitStatus = new SketchLabel("");
+    private final SketchLabel ratioComputerHitStatus = new SketchLabel("");
+
     private final MainMenu menu;
+    private BoardPanel hitBoardSection, yourBoardSection;
    
+    private MatchRepository matchRepository = new MatchRepository();
+    private PlayerProfileRepository playerProfileRepository = new PlayerProfileRepository();
+    private MatchRecord match = null;
+
     private JPanel body;
+    private JPanel endPanel;
     private JPanel bottom;
 
     private final Timer rotationTimer = new Timer(40, e -> {
@@ -55,7 +67,7 @@ public class InGameMenu extends PaperPanel{
         body = new JPanel(new GridBagLayout());
         body.setOpaque(false);
 
-        BoardPanel hitBoardSection = new BoardPanel();
+        hitBoardSection = new BoardPanel(new Board(), BoardPanel.Mode.ATTACK);
         hitBoardSection.setPreferredSize(new Dimension(450, 450));
     
         JPanel hitBorderHolder = SketchPanel();        
@@ -63,8 +75,10 @@ public class InGameMenu extends PaperPanel{
         hitBorderHolder.setPreferredSize(new Dimension(500, 500));
         hitBorderHolder.add(hitBoardSection, new GridBagConstraints());
 
-        BoardPanel yourBoardSection = new BoardPanel();
+        yourBoardSection = new BoardPanel(new Board(), BoardPanel.Mode.DEFENSE);
         yourBoardSection.setPreferredSize(new Dimension(250, 250));
+
+        hitBoardSection.setOnShot(this::playerShot);
 
         JPanel yourBorderHolder = SketchPanel();
         yourBorderHolder.setOpaque(false);
@@ -100,13 +114,11 @@ public class InGameMenu extends PaperPanel{
     }
     
     private JPanel EndPanel(){
-        JPanel endSection = JPanel(new BorderLayout());
+        JPanel endSection = new JPanel(new BorderLayout());
         endSection.setOpaque(false);
         
         title.setText("WINNER");
         bottom.setVisible(false);
-
-        MatchRecord match = menu.getMatchRecord();
        
         SketchLabel winnerLabel = new SketchLabel(match.getWinner().getPlayerName());
         winnerLabel.setFont(HEADER_FONT);
@@ -115,6 +127,9 @@ public class InGameMenu extends PaperPanel{
         
         JPanel playerOneSection = BuildPlayerSection(match.getPlayerOne()); 
         JPanel playerTwoSection = BuildPlayerSection(match.getPlayerTwo());
+        
+        JPanel playersRaw = new JPanel(new GridBagLayout());
+        playersRaw.setOpaque(false);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
@@ -124,20 +139,19 @@ public class InGameMenu extends PaperPanel{
         gbc.gridx = 0;
         gbc.weightx = 1;
         gbc.insets = new Insets(0, 0, 0, 20);
-        endSection.add(playerOneSection, gbc);
+        playersRaw.add(playerOneSection, gbc);
 
         gbc.gridx = 1;
         gbc.weightx = 1;
         gbc.insets = new Insets(0, 0, 0, 0);
-        endSection.add(playerTwoSection, gbc);
+        playersRaw.add(playerTwoSection, gbc);
         
         SketchButton menuButton = new SketchButton("Main Menu", () -> {
             menu.Show("HOME");
         });
         
-        menuButton.setHorizontalAlignment(SwingConstants.CENTER);
+        endSection.add(playersRaw, BorderLayout.CENTER);
         endSection.add(menuButton, BorderLayout.SOUTH);
-
         return endSection;
     }
     
@@ -147,9 +161,9 @@ public class InGameMenu extends PaperPanel{
         Player playerPlayer = menu.getPlayerPlayer();
         Player computer = menu.getComputerPlayer();
 
-        Player playerOne = playerPlayer.getPlayerName().equals(playerProfile.getPlayerName()) ? playerPlayer : computer;
+        Player player = playerPlayer.getPlayerName().equals(playerProfile.getPlayerName()) ? playerPlayer : computer;
 
-        JPanel section = JPanel(new BorderLayout());
+        JPanel section = new JPanel(new BorderLayout());
         section.setOpaque(false);
 
         SketchLabel nameLabel = playerProfile.getPlayerName().equals(winner.getPlayerName()) ? new SketchLabel("(W) " + playerProfile.getPlayerName()) : new SketchLabel(playerProfile.getPlayerName());
@@ -157,12 +171,13 @@ public class InGameMenu extends PaperPanel{
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         
-        SketchLabel statsLabel = new SketchLabel("C./W. Hits: " + playerOne.getCorrectHits() + "/" + playerOne.getWrongHits());
+        SketchLabel statsLabel = new SketchLabel("C./W. Hits: " + player.getCorrectHits() + "/" + player.getWrongHits());
         statsLabel.setFont(LIST_FONT);
         statsLabel.setHorizontalAlignment(SwingConstants.CENTER);
         statsLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        SketchLabel ratioLabel = new SketchLabel("Hit Ratio: " + playerOne.HitRatio());
+        String ratioText = String.format("Hit Ratio: %.0f%%", player.HitRatio() * 100);
+        SketchLabel ratioLabel = new SketchLabel(ratioText);
         ratioLabel.setFont(HEADER_FONT);
         ratioLabel.setHorizontalAlignment(SwingConstants.CENTER);
         ratioLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
@@ -170,36 +185,124 @@ public class InGameMenu extends PaperPanel{
         section.add(nameLabel, BorderLayout.NORTH);
         section.add(statsLabel, BorderLayout.CENTER);
         section.add(ratioLabel, BorderLayout.SOUTH);
+
+        return section;
     }
 
     private JPanel BuildBottomBar(MainMenu menu){
         JPanel bar = new JPanel(new BorderLayout());
         bar.setOpaque(false);
         
-        correctHitStatus.setFont(LIST_FONT);
-        correctHitStatus.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        wrongHitStatus.setFont(LIST_FONT);
-        wrongHitStatus.setHorizontalAlignment(SwingConstants.CENTER);
-    
-        ratioHitStatus.setFont(LIST_FONT);
-        ratioHitStatus.setHorizontalAlignment(SwingConstants.CENTER);
+        JPanel playerOneSection = new JPanel(new BorderLayout());
+        playerOneSection.setOpaque(false);
 
-        bar.add(correctHitStatus, BorderLayout.NORTH);
-        bar.add(wrongHitStatus, BorderLayout.CENTER);
-        bar.add(ratioHitStatus, BorderLayout.SOUTH);
+        namePlayerHitStatus.setFont(LIST_FONT);
+        namePlayerHitStatus.setHorizontalAlignment(SwingConstants.CENTER);
+
+        statsPlayerHitStatus.setFont(LIST_FONT);
+        statsPlayerHitStatus.setHorizontalAlignment(SwingConstants.CENTER);
+
+        ratioPlayerHitStatus.setFont(LIST_FONT);
+        ratioPlayerHitStatus.setHorizontalAlignment(SwingConstants.CENTER);
+
+        playerOneSection.add(namePlayerHitStatus, BorderLayout.NORTH);
+        playerOneSection.add(statsPlayerHitStatus, BorderLayout.CENTER);
+        playerOneSection.add(ratioPlayerHitStatus, BorderLayout.SOUTH);
+
+        
+        JPanel playerTwoSection = new JPanel(new BorderLayout());
+        playerTwoSection.setOpaque(false);
+
+        nameComputerHitStatus.setFont(LIST_FONT);
+        nameComputerHitStatus.setHorizontalAlignment(SwingConstants.CENTER);
+
+        statsComputerHitStatus.setFont(LIST_FONT);
+        statsComputerHitStatus.setHorizontalAlignment(SwingConstants.CENTER);
+
+        ratioComputerHitStatus.setFont(LIST_FONT);
+        ratioComputerHitStatus.setHorizontalAlignment(SwingConstants.CENTER);
+
+        playerTwoSection.add(nameComputerHitStatus, BorderLayout.NORTH);
+        playerTwoSection.add(statsComputerHitStatus, BorderLayout.CENTER);
+        playerTwoSection.add(ratioComputerHitStatus, BorderLayout.SOUTH);
+
+        bar.add(playerOneSection, BorderLayout.WEST);
+        bar.add(playerTwoSection, BorderLayout.EAST);
         return bar;
     }
     
-    public void Refresh(){
-        MatchRecord m = menu.getMatchRecord();
-        HumanPlayer player = menu.getPlayerPlayer();
-        if(m == null) return;
-        title.setText(m.getPlayerOne().getPlayerName() + " v.s. " + m.getPlayerTwo().getPlayerName());
+    private void playerShot(int row, int col){
+        HumanPlayer me = menu.getPlayerPlayer();
+        AIPlayer com = menu.getComputerPlayer();
 
-        correctHitStatus.setText("Correct Hits: " + player.getCorrectHits());
-        wrongHitStatus.setText("Wrong Hits: " + player.getWrongHits());
-        ratioHitStatus.setText("Hit Ratio: " + player.HitRatio());
+        if(me.fire(com.getPlayerBoard(), row, col) == ShotResult.ALREADY_SHOT) return;
+        hitBoardSection.repaint();
+        Refresh();
+
+        if(!com.getPlayerBoard().HasShipsLeft()){ finish(me, com, me.getPlayerName()); return; }
+
+        hitBoardSection.setAttackEnabled(false);
+        Timer t = new Timer(700, e -> {
+            com.makeMove(me.getPlayerBoard());
+            yourBoardSection.repaint();
+            Refresh();
+            if(!me.getPlayerBoard().HasShipsLeft()) finish(me, com, com.getPlayerName());
+            else hitBoardSection.setAttackEnabled(true);
+        });
+        t.setRepeats(false);
+        t.start();
+    }
+
+    private void finish(Player playerOne, Player playerTwo, String winner){
+        try{
+            match.setWinner(winner);
+            matchRepository.create(match);
+            playerProfileRepository.updateHits(playerOne);
+            playerProfileRepository.updateHits(playerTwo);      
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
+        hitBoardSection.setAttackEnabled(false);
+        remove(body);
+        endPanel = EndPanel();
+        add(endPanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+
+    public void Refresh(){
+        match = menu.getMatchRecord();
+
+        if(endPanel != null){
+            remove(endPanel);
+            endPanel = null;
+            add(body, BorderLayout.CENTER);
+            bottom.setVisible(true);
+            revalidate();
+            repaint();
+        }
+
+        HumanPlayer player = menu.getPlayerPlayer();
+        AIPlayer computer = menu.getComputerPlayer();
+
+        if(match == null) return;
+        title.setText(match.getPlayerOne().getPlayerName() + " v.s. " + match.getPlayerTwo().getPlayerName());
+
+        Board mine = menu.getPlayerPlayer().getPlayerBoard();
+        hitBoardSection.setBoard(mine);
+        yourBoardSection.setBoard(mine);
+        hitBoardSection.setAttackEnabled(true);
+
+        String playerHitRatio = String.format("Hit Ratio: %.0f%%", player.HitRatio() * 100);
+        namePlayerHitStatus.setText(player.getPlayerName());
+        statsPlayerHitStatus.setText("C./W. Hits: " + player.getCorrectHits() + "/" + player.getWrongHits());
+        ratioPlayerHitStatus.setText(playerHitRatio);
+
+        String computerHitRatio = String.format("Hit Ratio: %.0f%%", computer.HitRatio() * 100);
+        nameComputerHitStatus.setText(computer.getPlayerName());
+        statsComputerHitStatus.setText("C./W. Hits: " + computer.getCorrectHits() + "/" + computer.getWrongHits());
+        ratioComputerHitStatus.setText(computerHitRatio);
     }
 
     private JPanel SketchPanel(){

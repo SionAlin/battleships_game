@@ -15,16 +15,7 @@ public class HumanPlayer extends Player{
         PlacementInputProvider PIP = new ConsoleInputProvider();
         Point point = PIP.getMove();
         
-        if(PlayerBoard.board[point.x][point.y].getPlayerHit() == 0){
-            PlayerBoard.board[point.x][point.y].setPlayerHit(1);
-            opponentBoard.board[point.x][point.y].setEnemyHit(1);
-
-            if(opponentBoard.board[point.x][point.y].getCell() == 1){
-                recordHit(true);
-            }else{
-                recordHit(false);
-            }
-        }
+        fire(opponentBoard, point.x, point.y); 
     }
 
 }

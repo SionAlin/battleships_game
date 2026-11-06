@@ -3,8 +3,10 @@ package main.model;
 import java.awt.Point;
 
 public class Board{
-    public Cell[][] board;
-   
+    
+    private Cell[][] board;
+    private int shipCellsLeft = 0;
+
     public Board(){
         this.board = new Cell[10][10];
 
@@ -15,78 +17,58 @@ public class Board{
         }
     }
     
-    public void AddShip(ShipType ShipToAdd, Point PlaceToAdd, int rotation) throws Exception{
-        
-        int ShipLength = ShipToAdd.getLength();
-        int X = (int)PlaceToAdd.getX();
-        int Y = (int)PlaceToAdd.getY();
-        boolean ValidPosition = true;
-            
-        if(X < 0 || X > 9 || Y < 0 || Y > 9)
-            throw new Exception("Error: Ship out of bounds!");
+    public boolean CanPlace(ShipType type, int row, int col, int rotation){
+        int len = type.getLength();
+        if(row < 0 || col < 0 || row > 9 || col > 9) return false;
+        if(rotation == 0 && col + len > 10) return false;
+        if(rotation == 1 && row + len > 10) return false;
 
-        if((rotation == 0 && Y + ShipLength > 10) || (rotation == 1 && X + ShipLength > 10))
-            throw new Exception("Error: Ship out of bounds!");
-
-        if(rotation == 0){
-            for(int i = Y; i < Y + ShipLength; i++){
-                if(board[X][i].getCell() == 1){
-                    ValidPosition = false;
-                    throw new Exception("Error: Ships overlap!");
-                }
-            }
-
-            if(ValidPosition == true){
-                for(int i = Y; i < Y + ShipLength; i++){
-                    board[X][i].setCell(1);
-                }
-            }
+        for(int i = 0;  i < len; i++){
+            int r = rotation == 1 ? row + i : row;
+            int c = rotation == 0 ? col + i : col;
+            if(board[r][c].getCell() == 1) return false;
         }
+        return true;
+    }
 
-        if(rotation == 1){
-            for(int i = X; i < X + ShipLength; i++){
-                if(board[i][Y].getCell() == 1){
-                    ValidPosition = false;
-                    throw new Exception("Error: Ships overlap!");
-                }
-            }
+    public void AddShip(ShipType type, Point p, int rotation) throws Exception{
+        if(!CanPlace(type, p.x, p.y, rotation))
+            throw new Exception("Error: invalid ship position!");
 
-            if(ValidPosition == true){
-                for(int i = X; i < X + ShipLength; i++){
-                    board[i][Y].setCell(1);
-                }
-            }
+        for(int i = 0; i < type.getLength(); i++){
+            int r = rotation == 1 ? p.x + i : p.x;
+            int c = rotation == 0 ? p.y + i : p.y;
+            board[r][c].setCell(1);
+            shipCellsLeft++;
         }
+    }
+
+    public ShotResult Shoot(int row, int col){
+        if(board[row][col].getEnemyHit() != 0) return ShotResult.ALREADY_SHOT;
+        board[row][col].setEnemyHit(1);
+
+        if(board[row][col].getCell() == 1){
+            shipCellsLeft--;
+            return ShotResult.HIT;
+        }
+        return ShotResult.MISS;
+    }
+
+    public boolean HasShipsLeft(){
+        return shipCellsLeft > 0;
     }
     
-    // true -> the game continues
-    public boolean ShipsState(){
-        boolean state = false;
-        
-        outerLoop:
-        for(int i = 0; i < 10; i++){
-            for(int j = 0; j < 10; j++){
-                if(board[i][j].getCell() == 1 && board[i][j].getEnemyHit() == 0){
-                    state = true;
-                    break outerLoop;
-                }
-            }
-        }
-
-        return state;
+    public Cell[][] getBoard(){
+        return board;
     }
 
-    @Override
-    public String toString(){
-        String str = "";
+    public void setBoard(Cell[][] board){
+        this.board = new Cell[10][10];
 
         for(int i = 0; i < 10; i++){
             for(int j = 0; j < 10; j++){
-                str += "(C" + board[i][j].getCell() + ", Eh" + board[i][j].getEnemyHit() + ", Ph" + board[i][j].getPlayerHit() + ") ";
+                this.board[i][j] = board[i][j];
             }
-            str += "\n";
         }
-
-        return str;
     }
 }

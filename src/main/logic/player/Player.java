@@ -38,4 +38,18 @@ public abstract class Player{
         else return (double) CorrectHits / total;
     }
 
+    public void applyShotResult(int row, int col, ShotResult r){
+        if(r == ShotResult.ALREADY_SHOT) return;
+        Cell[][] board = PlayerBoard.getBoard();
+        board[row][col].setPlayerHit(r == ShotResult.HIT ? 2 : 1);
+        recordHit(r == ShotResult.HIT);
+    }
+
+    public ShotResult fire(Board opponentBoard, int row, int col){
+        Cell[][] board = PlayerBoard.getBoard();
+        if(board[row][col].getPlayerHit() != 0) return ShotResult.ALREADY_SHOT;
+        ShotResult r = opponentBoard.Shoot(row, col);
+        applyShotResult(row, col, r);
+        return r;
+    }
 }
