@@ -13,6 +13,8 @@ public class MainMenu{
     private CardLayout Cards = new CardLayout();
     private JPanel root = new JPanel(Cards);
 
+    private ProfileMenu profileMenu;
+    private LeaderboardMenu leaderboardMenu;
     private ShipPlacerMenu shipPlacerMenu;
     private InGameMenu inGameMenu;
 
@@ -34,8 +36,13 @@ public class MainMenu{
         this.Frame.setIconImage(icon.getImage());
 
         root.add(BuildHome(), "HOME");
-        root.add(new ProfileMenu(this), "PROFILE");
-        root.add(new LeaderboardMenu(this), "LEADERBOARD");
+
+        profileMenu = new ProfileMenu(this);
+        root.add(profileMenu, "PROFILE");
+
+        leaderboardMenu = new LeaderboardMenu(this);
+        root.add(leaderboardMenu, "LEADERBOARD");
+
         root.add(new PlayerVSComputerMenu(this), "PVC");
         root.add(new PlayerVSPlayerMenu(this), "PVP");
 
@@ -84,12 +91,41 @@ public class MainMenu{
         return computerPlayer;
     }
     
+    public Player getPlayerOne(){
+        if(matchRecord.getPlayerOne().getPlayerName().equals(playerPlayer.getPlayerName()))
+            return playerPlayer;
+        else
+            return computerPlayer;
+    }
+
+    public Player getPlayerTwo(){
+        if(matchRecord.getPlayerTwo().getPlayerName().equals(playerPlayer.getPlayerName()))
+            return playerPlayer;
+        else
+            return computerPlayer;
+    }
+
     public MatchRecord getMatchRecord(){
         return matchRecord;
+    }
+    
+    public boolean getPlayerSide(){
+        if(matchRecord.getPlayerOne().getPlayerName().equals(playerPlayer.getPlayerName()))
+            return false;
+        else
+            return true;
     }
 
     public void StartMatch(PlayerProfile profileOne, PlayerProfile profileTwo){
         matchRecord = new MatchRecord(profileOne, profileTwo);
+    }
+    
+    public ProfileMenu getProfileMenu(){
+        return profileMenu;
+    }
+
+    public LeaderboardMenu getLeaderboardMenu(){
+        return leaderboardMenu;
     }
 
     public ShipPlacerMenu getShipPlacerMenu(){

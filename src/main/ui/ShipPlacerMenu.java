@@ -90,7 +90,7 @@ public class ShipPlacerMenu extends PaperPanel{
 
         add(top, BorderLayout.NORTH);
         add(body, BorderLayout.CENTER);
-        add(BuildBottomBar(menu), BorderLayout.SOUTH);
+        add(BuildBottomBar(), BorderLayout.SOUTH);
 
         rotationTimer.start();
     }
@@ -130,7 +130,7 @@ public class ShipPlacerMenu extends PaperPanel{
         return panel;
     }
 
-    private JPanel BuildBottomBar(MainMenu menu){
+    private JPanel BuildBottomBar(){
         JPanel bar = new JPanel(new BorderLayout());
         bar.setOpaque(false);
 
@@ -144,7 +144,7 @@ public class ShipPlacerMenu extends PaperPanel{
                 e.printStackTrace();
                 return;
             }
-            menu.getInGameMenu().Refresh();
+            menu.getInGameMenu().StartMatch(menu.getPlayerSide());
             menu.Show("INGAME");
         });
         

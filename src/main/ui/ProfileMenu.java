@@ -175,7 +175,7 @@ public class ProfileMenu extends PaperPanel{
         searchField.setText("");
     }
     
-    private void RefreshAll(){
+    public void RefreshAll(){
         try{
             allProfiles = playerProfileRepository.findAll();
         }catch(SQLException e){

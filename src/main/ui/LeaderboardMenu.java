@@ -143,7 +143,7 @@ public class LeaderboardMenu extends PaperPanel{
         return rankingList.getSelectedValue();
     }
 
-    private void Refresh(){
+    public void Refresh(){
         listModel.clear();
 
         try{
