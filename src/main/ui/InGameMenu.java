@@ -3,6 +3,7 @@ package main.ui;
 import main.model.*;
 import main.database.*;
 import main.logic.player.*;
+import main.ui.design.*;
 import java.io.*;
 import java.awt.*;
 import java.util.Comparator;
@@ -16,8 +17,6 @@ import javax.swing.*;
 
 public class InGameMenu extends PaperPanel{
     
-    private double angle = 0;
-    private double phase = Math.random() * Math.PI * 2;
     private static final Font HEADER_FONT = new Font(Font.MONOSPACED, Font.BOLD, 45);
     private static final Font LIST_FONT = new Font(Font.MONOSPACED, Font.BOLD, 20);
 
@@ -46,12 +45,6 @@ public class InGameMenu extends PaperPanel{
     private JPanel endPanel;
     private JPanel bottom;
 
-    private final Timer rotationTimer = new Timer(40, e -> {
-        phase += 0.025;
-        angle = 1.02 * Math.sin(phase);
-        InGameMenu.this.repaint();
-    });
-
     public InGameMenu(MainMenu menu){
         this.menu = menu;
         
@@ -73,16 +66,14 @@ public class InGameMenu extends PaperPanel{
         hitBoardSection.setPreferredSize(new Dimension(450, 450));
         hitBoardSection.setOnShot(this::playerShot);
         
-        JPanel hitBorderHolder = SketchPanel();        
-        hitBorderHolder.setOpaque(false);
+        JPanel hitBorderHolder = new SketchPanel();        
         hitBorderHolder.setPreferredSize(new Dimension(500, 500));
         hitBorderHolder.add(hitBoardSection, new GridBagConstraints());
 
         yourBoardSection = new BoardPanel(new Board(), BoardPanel.Mode.DEFENSE);
         yourBoardSection.setPreferredSize(new Dimension(250, 250));
 
-        JPanel yourBorderHolder = SketchPanel();
-        yourBorderHolder.setOpaque(false);
+        JPanel yourBorderHolder = new SketchPanel();
         yourBorderHolder.setPreferredSize(new Dimension(300, 300));
         yourBorderHolder.add(yourBoardSection, new GridBagConstraints());
         
@@ -110,8 +101,6 @@ public class InGameMenu extends PaperPanel{
         add(top, BorderLayout.NORTH);
         add(body, BorderLayout.CENTER);
         add(bottom, BorderLayout.SOUTH);
-
-        rotationTimer.start();
     }
     
     private JPanel EndPanel(){
@@ -183,7 +172,7 @@ public class InGameMenu extends PaperPanel{
         JPanel yourBoard = new BoardPanel(player.getPlayerBoard(), BoardPanel.Mode.DEFENSE);
         yourBoard.setPreferredSize(new Dimension(250, 250));
 
-        JPanel boarderHolder = SketchPanel();
+        JPanel boarderHolder = new SketchPanel();
         boarderHolder.setOpaque(false);
         boarderHolder.setPreferredSize(new Dimension(300, 300));
         boarderHolder.add(yourBoard, new GridBagConstraints());
@@ -334,63 +323,4 @@ public class InGameMenu extends PaperPanel{
         statsPlayerTwoHitStatus.setText("C./W. Hits: " + playerTwo.getCorrectHits() + "/" + playerTwo.getWrongHits());
         ratioPlayerTwoHitStatus.setText(playerTwoHitRatio);
     }
-
-    private JPanel SketchPanel(){
-        JPanel section = new JPanel(new GridBagLayout()){
-            
-            @Override
-            protected void paintComponent(Graphics g){
-                super.paintComponent(g);
-
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                int w = getWidth();
-                int h = getHeight();
-                
-                g2.rotate(
-                    Math.toRadians(angle),
-                    w / 2.0,
-                    h / 2.0
-                );
-
-                RoundRectangle2D outline = new RoundRectangle2D.Float(
-                    4, 4,
-                    w - 8,
-                    h - 8,
-                    5, 5
-                );
-                
-
-                Shape oldClip = g2.getClip();
-                g2.clip(outline);
-
-                g2.setColor(ink);
-                g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-
-                for(int x = -h; x < w + h; x += 15){
-                    g2.drawLine(x, h, x + h, 0);
-                }
-
-                g2.drawLine(10, 6, w - 7, 10);
-                g2.drawLine(6, 11, w - 9, 13);
-
-                g2.drawLine(w - 2, 8, w - 8, h - 10);
-                g2.drawLine(w - 5, 9, w - 15 , h - 5);
-                
-                g2.drawLine(9, 8, 13, h - 2);
-                g2.drawLine(5, 12, 9, h - 8);
-
-                g2.drawLine(w - 4, h - 7, 9, h - 1);
-                g2.drawLine(w - 7, h - 1, 5, h - 5);
-
-                g2.setClip(oldClip);
-                g2.dispose();
-            }
-        };
-        
-        section.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
-        return section;
-    }
-
 }

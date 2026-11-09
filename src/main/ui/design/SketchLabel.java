@@ -1,4 +1,4 @@
-package main.ui;
+package main.ui.design;
 
 import java.io.*;
 import java.awt.*;

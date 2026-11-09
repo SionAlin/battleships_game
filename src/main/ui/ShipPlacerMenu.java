@@ -2,6 +2,7 @@ package main.ui;
 
 import main.model.*;
 import main.database.*;
+import main.ui.design.*;
 import java.io.*;
 import java.awt.*;
 import java.util.Comparator;
@@ -15,8 +16,6 @@ import javax.swing.*;
 
 public class ShipPlacerMenu extends PaperPanel{
  
-    private double angle = 0;
-    private double phase = Math.random() * Math.PI * 2;
     private static final Font HEADER_FONT = new Font(Font.MONOSPACED, Font.BOLD, 45);
     private static final Font LIST_FONT = new Font(Font.MONOSPACED, Font.BOLD, 18);
 
@@ -27,12 +26,6 @@ public class ShipPlacerMenu extends PaperPanel{
     private final MainMenu menu;
 
     private BoardPanel boardSection;
-
-    private final Timer rotationTimer = new Timer(40, e -> {
-        phase += 0.025;
-        angle = 1.02 * Math.sin(phase);
-        ShipPlacerMenu.this.repaint();
-    });
 
     private SketchButton readyButton;
     private SketchButton[] buttons;
@@ -64,8 +57,7 @@ public class ShipPlacerMenu extends PaperPanel{
         boardSection = new BoardPanel(new Board(), BoardPanel.Mode.PLACEMENT);
         boardSection.setPreferredSize(new Dimension(450, 450));
     
-        JPanel borderHolder = SketchPanel();        
-        borderHolder.setOpaque(false);
+        JPanel borderHolder = new SketchPanel();        
         borderHolder.setPreferredSize(new Dimension(500, 500));
         borderHolder.add(boardSection, new GridBagConstraints());
 
@@ -91,8 +83,6 @@ public class ShipPlacerMenu extends PaperPanel{
         add(top, BorderLayout.NORTH);
         add(body, BorderLayout.CENTER);
         add(BuildBottomBar(), BorderLayout.SOUTH);
-
-        rotationTimer.start();
     }
     
     private JPanel BuildShipsPanel(BoardPanel board){
@@ -179,63 +169,5 @@ public class ShipPlacerMenu extends PaperPanel{
         for(SketchButton b : buttons) b.setEnabled(true);
         
         updateReady();
-    }
-
-    private JPanel SketchPanel(){
-        JPanel section = new JPanel(new GridBagLayout()){
-            
-            @Override
-            protected void paintComponent(Graphics g){
-                super.paintComponent(g);
-
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                int w = getWidth();
-                int h = getHeight();
-                
-                g2.rotate(
-                    Math.toRadians(angle),
-                    w / 2.0,
-                    h / 2.0
-                );
-
-                RoundRectangle2D outline = new RoundRectangle2D.Float(
-                    4, 4,
-                    w - 8,
-                    h - 8,
-                    5, 5
-                );
-                
-
-                Shape oldClip = g2.getClip();
-                g2.clip(outline);
-
-                g2.setColor(ink);
-                g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-
-                for(int x = -h; x < w + h; x += 15){
-                    g2.drawLine(x, h, x + h, 0);
-                }
-
-                g2.drawLine(10, 6, w - 7, 10);
-                g2.drawLine(6, 11, w - 9, 13);
-
-                g2.drawLine(w - 2, 8, w - 8, h - 10);
-                g2.drawLine(w - 5, 9, w - 15 , h - 5);
-                
-                g2.drawLine(9, 8, 13, h - 2);
-                g2.drawLine(5, 12, 9, h - 8);
-
-                g2.drawLine(w - 4, h - 7, 9, h - 1);
-                g2.drawLine(w - 7, h - 1, 5, h - 5);
-
-                g2.setClip(oldClip);
-                g2.dispose();
-            }
-        };
-        
-        section.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
-        return section;
     }
 }

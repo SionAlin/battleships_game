@@ -1,6 +1,7 @@
 package main.ui;
 
 import main.model.*;
+import main.ui.design.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;

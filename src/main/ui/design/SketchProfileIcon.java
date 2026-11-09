@@ -1,4 +1,4 @@
-package main.ui;
+package main.ui.design;
 
 import java.awt.*;
 import java.awt.geom.*;
