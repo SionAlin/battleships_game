@@ -211,7 +211,7 @@ public class ProfileMenu extends PaperPanel{
             super.getListCellRendererComponent(list, value, index, isSelected, false);
 
             PlayerProfile profile = (PlayerProfile) value;
-            setText(String.format(ROW_FORMAT, " ~> ", profile.getPlayerName(), profile.getCorrectHits() + " C. Hits", profile.getWrongHits() + " W. Hits", "Hit Ratio ", profile.getHitRatio()));
+            setText(String.format(ROW_FORMAT, " ~> ", profile.getPlayerName(), "C. Hits: " + profile.getCorrectHits(), "W. Hits: " + profile.getWrongHits(), "Hit Ratio ", profile.getHitRatio()));
             setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
             setForeground(ink);
             setBackground(new Color(205, 218, 242));

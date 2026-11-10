@@ -2,6 +2,7 @@ package main.ui;
 
 import main.model.*;
 import main.database.*;
+import main.logic.*;
 import main.logic.player.*;
 import main.ui.design.*;
 import java.io.*;
@@ -15,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.*;
 
-public class InGameMenu extends PaperPanel{
+public class InGameMenu extends PaperPanel implements MatchView{
     
     private static final Font HEADER_FONT = new Font(Font.MONOSPACED, Font.BOLD, 45);
     private static final Font LIST_FONT = new Font(Font.MONOSPACED, Font.BOLD, 20);
@@ -36,9 +37,8 @@ public class InGameMenu extends PaperPanel{
     private BoardPanel hitBoardSection, yourBoardSection;
 
     private SketchButton menuButton;
-   
-    private MatchRepository matchRepository = new MatchRepository();
-    private PlayerProfileRepository playerProfileRepository = new PlayerProfileRepository();
+    
+    private LocalMatchController controller;
     private MatchRecord match = null;
 
     private JPanel body;
@@ -64,7 +64,9 @@ public class InGameMenu extends PaperPanel{
 
         hitBoardSection = new BoardPanel(new Board(), BoardPanel.Mode.ATTACK);
         hitBoardSection.setPreferredSize(new Dimension(450, 450));
-        hitBoardSection.setOnShot(this::playerShot);
+        hitBoardSection.setOnShot((row, col) -> {
+            if(controller != null) controller.playerShot(row, col);
+        });
         
         JPanel hitBorderHolder = new SketchPanel();        
         hitBorderHolder.setPreferredSize(new Dimension(500, 500));
@@ -235,58 +237,36 @@ public class InGameMenu extends PaperPanel{
         bar.add(playerTwoSection, BorderLayout.EAST);
         return bar;
     }
-   
-    private void computerTurn(){
-        HumanPlayer me = menu.getPlayerPlayer();
-        AIPlayer com = menu.getComputerPlayer();
-
-        hitBoardSection.setAttackEnabled(false);
-        Timer t = new Timer(700, e -> {
-            com.makeMove(me.getPlayerBoard());
-            yourBoardSection.repaint();
-            Refresh();
-            if(!me.getPlayerBoard().HasShipsLeft()) finish(me, com, com.getPlayerName());
-            else hitBoardSection.setAttackEnabled(true);
-        });
-        t.setRepeats(false);
-        t.start();
-    }
-
-    private void playerShot(int row, int col){
-        HumanPlayer me = menu.getPlayerPlayer();
-        AIPlayer com = menu.getComputerPlayer();
-
-        if(me.fire(com.getPlayerBoard(), row, col) == ShotResult.ALREADY_SHOT) return;
-        hitBoardSection.repaint();
+    
+    public void StartMatch(boolean computerFirst){
         Refresh();
-
-        if(!com.getPlayerBoard().HasShipsLeft()){ finish(me, com, me.getPlayerName()); return; }
-
-        computerTurn();        
+        controller = new LocalMatchController(
+            menu.getPlayerPlayer(), 
+            menu.getComputerPlayer(),
+            match,
+            this
+        );
+        controller.startMatch(computerFirst);
     }
 
-    private void finish(Player playerOne, Player playerTwo, String winner){
-        try{
-            match.setWinner(winner);
-            matchRepository.create(match);
-            playerProfileRepository.updateHits(playerOne);
-            playerProfileRepository.updateHits(playerTwo);      
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
+    @Override
+    public void setAttackEnabled(boolean enabled){
+        hitBoardSection.setAttackEnabled(enabled);
+    }
 
-        hitBoardSection.setAttackEnabled(false);
+    @Override
+    public void repaintBoards(){
+        hitBoardSection.repaint();
+        yourBoardSection.repaint();
+    }
+
+    @Override
+    public void showEndScreen(){
         remove(body);
         endPanel = EndPanel();
         add(endPanel, BorderLayout.CENTER);
         revalidate();
         repaint();
-    }
-
-    public void StartMatch(boolean turn){
-        Refresh();
-        if(turn) computerTurn();
-        else hitBoardSection.setAttackEnabled(true);
     }
 
     public void Refresh(){
@@ -295,21 +275,22 @@ public class InGameMenu extends PaperPanel{
         if(endPanel != null){
             remove(endPanel);
             endPanel = null;
+            bottom.remove(menuButton);
             add(body, BorderLayout.CENTER);
-            menuButton.setVisible(false);
             revalidate();
             repaint();
         }
 
+        if(match == null) return;
         Player playerOne = menu.getPlayerOne();
         Player playerTwo = menu.getPlayerTwo();
-
-        if(match == null) return;
         title.setText(playerOne.getPlayerName() + " v.s. " + playerTwo.getPlayerName());
 
         Board mine = menu.getPlayerPlayer().getPlayerBoard();
         hitBoardSection.setBoard(mine);
         yourBoardSection.setBoard(mine);
+        
+        refreshStats();
 
         String playerOneHitRatio = String.format("Hit Ratio: %.0f%%", playerOne.HitRatio() * 100);
         namePlayerOneHitStatus.setText(playerOne.getPlayerName());
@@ -323,4 +304,21 @@ public class InGameMenu extends PaperPanel{
         statsPlayerTwoHitStatus.setText("C./W. Hits: " + playerTwo.getCorrectHits() + "/" + playerTwo.getWrongHits());
         ratioPlayerTwoHitStatus.setText(playerTwoHitRatio);
     }
+
+    @Override
+    public void refreshStats(){
+        Player playerOne = menu.getPlayerOne();
+        Player playerTwo = menu.getPlayerTwo();
+        
+        namePlayerOneHitStatus.setText(playerOne.getPlayerName());
+        namePlayerOneHitStatus.setVisible(true);
+        statsPlayerOneHitStatus.setText("C./W. Hits: " + playerOne.getCorrectHits() + "/" + playerOne.getWrongHits());
+        ratioPlayerOneHitStatus.setText(String.format("Hit Ratio: %.0f%%", playerOne.HitRatio() * 100));
+        
+        namePlayerTwoHitStatus.setText(playerTwo.getPlayerName());
+        namePlayerTwoHitStatus.setVisible(true);
+        statsPlayerTwoHitStatus.setText("C./W. Hits: " + playerTwo.getCorrectHits() + "/" + playerTwo.getWrongHits());
+        ratioPlayerTwoHitStatus.setText(String.format("Hit Ratio: %.0f%%", playerTwo.HitRatio() * 100));
+    }
+
 }
