@@ -15,6 +15,7 @@ import javax.swing.*;
 
 public class LeaderboardMenu extends PaperPanel{
     
+    private String historyOwner = null;
     private static final Font LIST_FONT = new Font(Font.MONOSPACED, Font.BOLD, 18);
     private static final String ROW_FORMAT = "%-6s%-22s%9s%9s%13s";
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -98,8 +99,7 @@ public class LeaderboardMenu extends PaperPanel{
         historyLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         historyList.setOpaque(false);
-        historyList.setCellRenderer(new HistoryRenderer());
-        
+        historyList.setCellRenderer(new HistoryRenderer()); 
         JScrollPane historyScroll = ScrollBox(historyList);
         historyHeader.setFont(LIST_FONT);
         historyHeader.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
@@ -121,7 +121,7 @@ public class LeaderboardMenu extends PaperPanel{
             PlayerProfile selected = getSelectedProfile();
             if(selected != null){
                 listHistory.clear();
-
+                historyOwner = selected.getPlayerName();
                 try{
                     historyHeader.setText(selected.getPlayerName() + "'s matches");
                     List<MatchRecord> matches = repository.matchHistory(selected);
@@ -131,6 +131,7 @@ public class LeaderboardMenu extends PaperPanel{
                 }catch(SQLException e){
                     e.printStackTrace();
                 }
+                historyList.repaint();
             }
         });
 
@@ -193,16 +194,19 @@ public class LeaderboardMenu extends PaperPanel{
             String one = matchRecord.getPlayerOne().getPlayerName();
             String two = matchRecord.getPlayerTwo().getPlayerName();
             String winner = matchRecord.getWinner().getPlayerName();
-
-            String left = one.equals(winner) ? "(W) " + one : one;
-            String right = two.equals(winner) ? "(W) " + two : two;
+            
+            String result = winner.equals(historyOwner) 
+            ? "<font color='#11887B'>(W)</font>" 
+            : "<font color='#AC3235'>(L)</font>";
 
             LocalDateTime startTime = matchRecord.getStartTime();
             LocalDateTime endTime = matchRecord.getEndTime();
             
             int number = list.getModel().getSize() - index;
 
-            setText("<html>" + number + ". " + left +  " - " + right
+            setText("<html>" + number + ". " 
+                + "<br>"
+                + result + " " + one +  " - " + two
                 + "<br>"
                 + "<br>Started: " + startTime.format(TIME_FORMAT)
                 + "<br>Ended: " + endTime.format(TIME_FORMAT)
