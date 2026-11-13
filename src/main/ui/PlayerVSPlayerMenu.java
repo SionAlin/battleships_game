@@ -85,7 +85,8 @@ public class PlayerVSPlayerMenu extends PaperPanel{
     
     private JPanel BuildHostSection(){
       
-        JPanel section = new SketchPanel(new BorderLayout(0, 15));
+        JPanel section = new JPanel(new BorderLayout(0, 15));
+        section.setOpaque(false);
         section.setBorder(BorderFactory.createEmptyBorder(40,80,40,80));
         
         JPanel codePanel = new JPanel(new BorderLayout());
@@ -116,7 +117,8 @@ public class PlayerVSPlayerMenu extends PaperPanel{
 
     private JPanel BuildJoinSection(){
         
-        JPanel section = new SketchPanel(new BorderLayout(0,15));
+        JPanel section = new JPanel(new BorderLayout(0,15));
+        section.setOpaque(false);
         section.setBorder(BorderFactory.createEmptyBorder(40,80,40,80));
         
         JPanel codePanel = new JPanel(new BorderLayout());
