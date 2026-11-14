@@ -66,6 +66,6 @@ public class Message{
     public int getRow(){ return row; }
     public int getCol(){ return col; }
     public ShotResult getResult(){ return result; }
-    public boolean inGameOver(){ return gameOver; }
+    public boolean isGameOver(){ return gameOver; }
     public String getLayout(){ return layout; }
 }
