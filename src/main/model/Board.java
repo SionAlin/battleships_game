@@ -71,4 +71,53 @@ public class Board{
             }
         }
     }
+
+    private static int totalShipCells(){
+        int total = 0;
+        for(ShipType type : ShipType.values()){
+            total += type.getLength();
+        }
+        return total;
+    }
+
+    public String BoardToString(){
+        String layout = "";
+        int shipParts = 0;
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){
+                int c = this.board[i][j].getCell();
+                layout += c;
+                shipParts += c;
+            }
+        }
+
+        if(shipParts == totalShipCells())
+            return layout;
+        else
+            throw new IllegalArgumentException("Error: invalid number of ship cells!");
+    }
+
+    public void StringToBoard(String layout) throws Exception{
+        if(layout == null || layout.length() != 100)
+            throw new IllegalArgumentException("Error: invalid string length!");
+        if(!layout.matches("[01]+"))
+            throw new IllegalArgumentException("Error: invalid board layout");
+        
+        Cell[][] temp = new Cell[10][10];
+        int shipParts = 0;
+        for(int i = 0; i < 100; i++){
+            int c = layout.charAt(i) - '0';
+            temp[i/10][i%10] = new Cell(c);
+            shipParts += c;
+        }
+        
+        if(shipParts == totalShipCells()){
+            this.board = temp;
+            this.shipCellsLeft = shipParts;
+        }else{
+            throw new IllegalArgumentException("Error: invalid number of ship cells!");
+        }
+
+    }
+
 }

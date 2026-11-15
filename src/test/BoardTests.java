@@ -16,9 +16,6 @@ public class BoardTests{
         Board testComputerBoard = new Board();
         ShipPlacer testComputerShipPlacer = new ShipPlacer();
 
-        //testPlayerShipPlacer.PlayerShipPlacer(testPlayerBoard);
-        //System.out.println(testPlayerBoard.toString());
-
         testComputerShipPlacer.ComputerShipPlacer(testComputerBoard);
         System.out.println(testComputerBoard.toString());
     }
@@ -63,6 +60,34 @@ public class BoardTests{
         // Test 4
         assertEquals(true, testBoard.HasShipsLeft(), "Board test 4 : Failed");
         System.out.println("Board test 4 : Passed");
+    
+        // Test 5
+        assertThrows(IllegalArgumentException.class, () -> testBoard.StringToBoard("110011..."));
+        assertThrows(IllegalArgumentException.class, () -> testBoard.StringToBoard("2".repeat(100)));
+        assertThrows(IllegalArgumentException.class, () -> testBoard.StringToBoard("0".repeat(100)));
+        assertThrows(IllegalArgumentException.class, () -> testBoard.StringToBoard("1".repeat(100)));
+        assertThrows(IllegalArgumentException.class, () -> testBoard.BoardToString());
+        System.out.println("Board test 5 : Passed");
+    
+        // Test 6
+        Board testOriginalBoard = new Board();
+        ShipPlacer shipPlacer = new ShipPlacer();
+        shipPlacer.ComputerShipPlacer(testOriginalBoard);
+
+        String testBoardToString = testOriginalBoard.BoardToString();
+        Board testStringToBoard = new Board();
+        testStringToBoard.StringToBoard(testBoardToString);
+
+        Cell[][] originalBoard = testOriginalBoard.getBoard();
+        Cell[][] stringBoard = testStringToBoard.getBoard();
+
+        for(int i = 0; i < 10; i++){
+            for(int j = 0; j < 10; j++){
+                assertEquals(originalBoard[i][j].getCell(), stringBoard[i][j].getCell(), "Board test 6 : Failed");
+            }
+        }
+        assertTrue(testStringToBoard.HasShipsLeft(), "Board test 6 : HasShipsLeft after StringToBoard");
+        System.out.println("Board test 6 : Passed");
     }
     
 }
