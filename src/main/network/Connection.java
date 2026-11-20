@@ -4,14 +4,19 @@ import main.network.protocol.*;
 import java.net.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Connection{
     
     private final Socket socket;
     private final BufferedReader in;
     private final PrintWriter out;
-    private volatile boolean closed = false;
+    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final Object lock = new Object();
     private ConnectionListener listener;
+    private final ArrayDeque<Message> pending = new ArrayDeque<>();
+    private boolean disconnectPending = false;
     private Thread reader;
 
     public Connection(Socket socket) throws IOException{
@@ -23,15 +28,52 @@ public class Connection{
             new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true
         );
     }
+    
+    public void switchListener(ConnectionListener listener){
+        attach(listener);
+    }
 
     public void start(ConnectionListener listener){
         if(reader != null)
             throw new IllegalStateException("Connection already started");
 
-        this.listener = listener;
+        attach(listener);
         reader = new Thread(this::readLoop, "connection-reader");
         reader.setDaemon(true);
         reader.start();
+    }
+    
+    public void attach(ConnectionListener newListener){
+        synchronized(lock){
+            this.listener = newListener;
+            if(newListener == null) return;
+
+            while(listener == newListener && !pending.isEmpty())
+                newListener.onMessage(pending.poll());
+
+            if(listener == newListener && disconnectPending){
+                disconnectPending = false;
+                newListener.onDisconnect();
+            }
+        }
+    }
+    
+    public void detach(){
+        attach(null);
+    }
+
+    private void deliver(Message message){
+        synchronized(lock){
+            if(listener == null) pending.add(message);
+            else listener.onMessage(message);
+        }
+    }
+
+    private void deliverDisconnect(){
+        synchronized(lock){
+            if(listener == null) disconnectPending = true;
+            else listener.onDisconnect();
+        }
     }
 
     private void readLoop(){
@@ -45,34 +87,38 @@ public class Connection{
                     System.err.println("Ignoring invalid message: " + e.getMessage());
                     continue;
                 }
-                listener.onMessage(message);
+                deliver(message);
             }
         }catch(IOException e){
-            e.printStackTrace();
+            if(!closed.get())
+                e.printStackTrace();
         }finally{
-            boolean wasClosedByUs = closed;
-            closeQuietly();
-            if(!wasClosedByUs)
-                listener.onDisconnect();
+            if(closed.compareAndSet(false, true)){
+                closeQuietly();
+                deliverDisconnect();
+            }
         }
     }
 
     public synchronized boolean send(Message message){
-        if(closed) return false;
+        if(closed.get()) return false;
         out.println(MessageSerializer.serialize(message));
         if(out.checkError()){
-            closeQuietly();
+            if(closed.compareAndSet(false, true)){
+                closeQuietly();
+                deliverDisconnect();
+            }
             return false;
         }
         return true;
     }
 
     public void close(){
-        closeQuietly();
+        if(closed.compareAndSet(false, true))
+            closeQuietly();
     }
 
     private void closeQuietly(){
-        closed = true;
         try{
             socket.close();
         }catch(IOException e){
